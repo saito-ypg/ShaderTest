@@ -1,7 +1,8 @@
 #include "Stage.h"
 #include"Engine/Model.h"
+
 //コンストラクタ
-Stage::Stage(GameObject* parent)	 :GameObject(parent, "Stage"), hModel_(-1)
+Stage::Stage(GameObject* parent)	 :GameObject(parent, "Stage"), hModel_(-1),pSprite_(nullptr)
 {
 }
 
@@ -13,9 +14,8 @@ Stage::~Stage()
 //初期化
 void Stage::Initialize()
 {
-    //モデルデータのロード
-    hModel_ = Model::Load("Assets/BoxDefault.fbx");
-    assert(hModel_ >= 0);
+    pSprite_ = new Sprite();
+    pSprite_->Initialize();
 }
 
 //更新
@@ -27,11 +27,11 @@ void Stage::Update()
 //描画
 void Stage::Draw()
 {
-    Model::SetTransform(hModel_, transform_);
-    Model::Draw(hModel_);
+    pSprite_->Draw(transform_);
 }
 
 //開放
 void Stage::Release()
 {
+    delete pSprite_;
 }

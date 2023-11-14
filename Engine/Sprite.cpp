@@ -131,7 +131,7 @@ HRESULT Sprite::CreateConstantBuffer()
 HRESULT Sprite::LoadTexture()
 	{
 		pTexture_ = new Texture;
-		return pTexture_->Load("Assets\\dice.png");
+		return pTexture_->Load("Assets\\che2.png");
 	}
 
 /////////draw•ªŠ„/////////
