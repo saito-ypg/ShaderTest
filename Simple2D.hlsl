@@ -42,7 +42,24 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD)
 //───────────────────────────────────────
 // ピクセルシェーダ
 //───────────────────────────────────────
+#define Effect 1 //0=grayscale,1=posterization
+
 float4 PS(VS_OUT inData) : SV_Target
 {
-	return g_texture.Sample(g_sampler, inData.uv);
+#if(Effect==0)
+	//GlayScale
+	{
+        const float rBright = 0.298912, gBright = 0.586611, bBright = 0.114478;
+        float4 s = g_texture.Sample(g_sampler, inData.uv);
+        float g = (s.r * rBright + s.g * gBright + s.b * gBright);
+        return g;
+    }
+#elif(Effect==1)
+	{
+        const float step =16.0;
+        float4 output = floor(g_texture.Sample(g_sampler, inData.uv) * step) / step;
+        return output;
+    }
+#endif
+	
 }
