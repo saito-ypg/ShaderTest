@@ -6,14 +6,6 @@ namespace Model{
 }
 int Model::Load(std::string fileName)
 {
-	//ファイル名のモデルを読み込み、同じモデル名があればそのモデル番号を返す
-	//同じ名前のモデルがなければ、読み込んでベクタに追加
-	/*for (int i = 0; i < modelList_.size(); i++)
-	{
-		if (modelList_.at(i)->fileName_ == fileName)
-			return i;
-	}*/
-
 	ModelData* pData=new ModelData;
 	pData->fileName_ = fileName;
 	pData->pFbx_ = nullptr;

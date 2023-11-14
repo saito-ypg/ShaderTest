@@ -15,7 +15,7 @@ Stage::~Stage()
 void Stage::Initialize()
 {
     pSprite_ = new Sprite();
-    pSprite_->Initialize();
+    pSprite_->Initialize("Assets\\sample.png");
 }
 
 //XV

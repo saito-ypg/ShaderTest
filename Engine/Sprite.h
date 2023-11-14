@@ -33,7 +33,7 @@ protected:
 public:
 	Sprite();
 	~Sprite();
-	HRESULT Initialize();
+	HRESULT Initialize(string filename);
 	void Draw(Transform&transform);
 	void Release();
 
@@ -47,7 +47,7 @@ private:
 
 	HRESULT CreateConstantBuffer();
 
-	HRESULT LoadTexture();
+	HRESULT LoadTexture(string filename);
 
 
 	//DrawŠÖ”‚©‚çŒÄ‚Î‚ê‚éŠÖ”

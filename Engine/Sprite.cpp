@@ -9,7 +9,7 @@ Sprite::~Sprite()
 	Release();
 }
 
-HRESULT Sprite::Initialize()
+HRESULT Sprite::Initialize(string filename)
 {
 	HRESULT hr = S_OK;
 	InitVertexData();
@@ -38,7 +38,7 @@ HRESULT Sprite::Initialize()
 		return hr;
 	}
 
-	hr = LoadTexture();
+	hr = LoadTexture(filename);
 	if (FAILED(hr))
 	{
 		MessageBox(nullptr, "テクスチャの読み込みに失敗しました", "エラー", MB_OK);
@@ -128,10 +128,10 @@ HRESULT Sprite::CreateConstantBuffer()
 
 		return Direct3D::pDevice_->CreateBuffer(&cb, nullptr, &pConstantBuffer_);
 	}
-HRESULT Sprite::LoadTexture()
+HRESULT Sprite::LoadTexture(string filename)
 	{
 		pTexture_ = new Texture;
-		return pTexture_->Load("Assets\\che2.png");
+		return pTexture_->Load(filename);
 	}
 
 /////////draw分割/////////

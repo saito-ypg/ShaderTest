@@ -14,7 +14,7 @@ namespace Model
 	int Load(std::string fileName);
 	void SetTransform(int hModel, Transform transform);
 	void Draw(int hModel);
-	void Release(int hModel);
+	void Release(int hModel);//未使用
 	void Release();//モデルを使っていないか確認
 	
 }

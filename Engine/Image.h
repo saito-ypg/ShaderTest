@@ -2,9 +2,9 @@
 #include<string>
 #include<vector>
 #include"Sprite.h"
-namespace Model
+namespace Image
 {
-	struct ModelData
+	struct ImageData
 	{
 		Sprite* pSprite_;//fbx
 		Transform transform_;//トランスフォーム
@@ -12,9 +12,9 @@ namespace Model
 
 	};
 	int Load(std::string fileName);
-	void SetTransform(int hModel, Transform transform);
-	void Draw(int hModel);
-	void Release(int hModel);
+	void SetTransform(int hPict, Transform transform);
+	void Draw(int hPict);
+	void Release(int hPict);
 	void Release();//モデルを使っていないか確認
 
 }
