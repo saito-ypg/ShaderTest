@@ -20,7 +20,7 @@ int Image::Load(std::string fileName)
 	if (pData->pSprite_ == nullptr)
 	{
 		pData->pSprite_ = new Sprite;
-		//pData->pSprite_->Initialize(fileName);
+		pData->pSprite_->Initialize(fileName);
 	}
 
 	imageList_.push_back(pData);
