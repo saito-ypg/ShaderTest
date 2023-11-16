@@ -42,11 +42,15 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD)
 //───────────────────────────────────────
 // ピクセルシェーダ
 //───────────────────────────────────────
-#define Effect 1 //0=grayscale,1=posterization
+#define Effect 0 //0=none 1=grayscale,2=posterization
 
 float4 PS(VS_OUT inData) : SV_Target
 {
 #if(Effect==0)
+	{
+        return g_texture.Sample(g_sampler, inData.uv);
+	} 
+#elif(Effect==1)
 	//GlayScale
 	{
         const float rBright = 0.298912, gBright = 0.586611, bBright = 0.114478;
@@ -54,10 +58,10 @@ float4 PS(VS_OUT inData) : SV_Target
         float g = (s.r * rBright + s.g * gBright + s.b * gBright);
         return g;
     }
-#elif(Effect==1)
+#elif(Effect==2)
 	{//全体の色味を加味したほうがいいか
-        const float step =5;
-        float4 output = floor(g_texture.Sample(g_sampler, inData.uv) * (256 / step)) / step;
+        const float step =256;
+        float4 output = floor(g_texture.Sample(g_sampler, inData.uv) * step) / step;
         return output;
     }
 #endif
