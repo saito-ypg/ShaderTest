@@ -55,9 +55,9 @@ float4 PS(VS_OUT inData) : SV_Target
         return g;
     }
 #elif(Effect==1)
-	{
-        const float step =16.0;
-        float4 output = floor(g_texture.Sample(g_sampler, inData.uv) * step) / step;
+	{//‘S‘Ì‚ÌF–¡‚ğ‰Á–¡‚µ‚½‚Ù‚¤‚ª‚¢‚¢‚©
+        const float step =5;
+        float4 output = floor(g_texture.Sample(g_sampler, inData.uv) * (256 / step)) / step;
         return output;
     }
 #endif
