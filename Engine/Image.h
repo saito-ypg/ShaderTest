@@ -14,7 +14,7 @@ namespace Image
 	int Load(std::string fileName);
 	void SetTransform(int hPict, Transform transform);
 	void Draw(int hPict);
-	void Release(int hPict);
+	void Release(int hPict);//多分実装しないな
 	void Release();//モデルを使っていないか確認
 
 }

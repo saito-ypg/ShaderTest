@@ -1,6 +1,7 @@
 #include "SceneManager.h"
 #include"global.h"
 #include"../TestScene.h"
+#include"../ShaderScene.h"
 SceneManager::SceneManager(GameObject* parent) :GameObject(parent, "SceneManager")
 {
 }
@@ -13,7 +14,7 @@ void SceneManager::Initialize()
 {
 	currentSceneID_ = SCENE_ID_TEST;
 	nextSceneID_ = SCENE_ID_TEST;
-	Instantiate<TestScene>(this);
+	Instantiate<ShaderScene>(this);
 }
 
 void SceneManager::Update()
