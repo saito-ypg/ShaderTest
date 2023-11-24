@@ -69,5 +69,6 @@ void Model::Release()
 
 void Model::SetDiffuse(int hModel, XMFLOAT4 rgba)
 {
-	modelList_.at(hModel)->pFbx_->SetDiffuse(rgba);
+	XMFLOAT4 color{ rgba.x / 256.0f,rgba.y / 256.0f,rgba.z / 256.0f,rgba.w / 256.0f };
+	modelList_.at(hModel)->pFbx_->SetDiffuse(color);
 }

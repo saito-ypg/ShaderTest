@@ -16,6 +16,11 @@ namespace Model
 	void Draw(int hModel);
 	void Release(int hModel);//未使用
 	void Release();//モデルを使っていないか確認
-	void SetDiffuse(int hModel, XMFLOAT4 f4);
+	/// <summary>
+	/// モデルの色を強制的に変更する
+	/// </summary>
+	/// <param name="hModel">ハンドル</param>
+	/// <param name="rgba">RGBA 0~255</param>
+	void SetDiffuse(int hModel, XMFLOAT4 rgba);
 }
 

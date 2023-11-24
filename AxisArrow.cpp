@@ -38,7 +38,7 @@ void AxisArrow::Draw()
 	
 	for (int i = 0; i < 3; i++)
 	{
-		Model::SetDiffuse(hModel_[i], XMFLOAT4(1, 0, 1, 1));
+		Model::SetDiffuse(hModel_[i], XMFLOAT4(200, 0,180,255));
 		Model::SetTransform(hModel_[i], t[i]);
 		Model::Draw(hModel_[i]);
 	}
