@@ -66,3 +66,8 @@ void Model::Release()
 
 	modelList_.clear();
 }
+
+void Model::SetDiffuse(int hModel, XMFLOAT4 rgba)
+{
+	modelList_.at(hModel)->pFbx_->SetDiffuse(rgba);
+}

@@ -140,6 +140,14 @@ void Fbx::Release()
 	SAFE_DELETE_ARRAY(indexCount_);
 }
 
+void Fbx::SetDiffuse(XMFLOAT4 rgba)
+{
+	for (int i = 0; i < materialCount_; i++)
+	{
+		pMaterialList_[i].diffuse = rgba;
+	}
+}
+
 //頂点バッファ準備
 HRESULT Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 {

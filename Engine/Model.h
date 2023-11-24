@@ -16,6 +16,6 @@ namespace Model
 	void Draw(int hModel);
 	void Release(int hModel);//未使用
 	void Release();//モデルを使っていないか確認
-	
+	void SetDiffuse(int hModel, XMFLOAT4 f4);
 }
 

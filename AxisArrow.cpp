@@ -10,11 +10,15 @@ AxisArrow::AxisArrow(GameObject* parent):GameObject(parent,"AxisArrow")
 
 void AxisArrow::Initialize()
 {
-	string color[3] = { "R","G","B" };
+	string color[3] = { "r","g","b" };
 	for (int i =0;i<3;i++)
 	{
-		hModel_[i] = Model::Load("Assets\\arrow" + color[i] + ".fbx");
-	}
+		hModel_[i] = Model::Load("assets\\arrow" + color[i] + ".fbx");
+	}/*
+	for (auto i : hModel_)
+	{
+		i = Model::Load("Assets\\arrow.fbx");
+	}*/
 }
 
 void AxisArrow::Update()
@@ -34,7 +38,7 @@ void AxisArrow::Draw()
 	
 	for (int i = 0; i < 3; i++)
 	{
-
+		Model::SetDiffuse(hModel_[i], XMFLOAT4(1, 0, 1, 1));
 		Model::SetTransform(hModel_[i], t[i]);
 		Model::Draw(hModel_[i]);
 	}

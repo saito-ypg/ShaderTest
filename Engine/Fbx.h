@@ -48,7 +48,7 @@ public:
 	HRESULT Load(std::string fileName);
 	void    Draw(Transform& transform);
 	void    Release();
-
+	void SetDiffuse(XMFLOAT4 rgba);
 
 private:
 	void PassDataToCB(Transform transform,int i);
