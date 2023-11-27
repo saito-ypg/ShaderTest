@@ -57,3 +57,10 @@ XMMATRIX Camera::GetProjectionMatrix()
 {
 	return projMatrix_;
 }
+
+XMFLOAT3 Camera::GetDir()
+{
+	XMFLOAT3 Fdir;
+	XMStoreFloat3(&Fdir, (target_ - position_));
+	return Fdir;
+}

@@ -14,11 +14,12 @@ void AxisArrow::Initialize()
 	for (int i =0;i<3;i++)
 	{
 		hModel_[i] = Model::Load("assets\\arrow" + color[i] + ".fbx");
+	//	Model::SetDiffuse(hModel_[i], XMFLOAT4(200, 0, 180, 255));
 	}/*
 	for (auto i : hModel_)
 	{
 		i = Model::Load("Assets\\arrow.fbx");
-	}*/
+	}*/		
 }
 
 void AxisArrow::Update()
@@ -38,7 +39,6 @@ void AxisArrow::Draw()
 	
 	for (int i = 0; i < 3; i++)
 	{
-		Model::SetDiffuse(hModel_[i], XMFLOAT4(200, 0,180,255));
 		Model::SetTransform(hModel_[i], t[i]);
 		Model::Draw(hModel_[i]);
 	}

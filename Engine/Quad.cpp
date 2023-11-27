@@ -133,7 +133,7 @@ HRESULT Quad::CreateConstantBuffer()
 HRESULT Quad::LoadTexture()
 {
 	pTexture_ = new Texture;
-	return pTexture_->Load("Assets\\dice.png");
+	return pTexture_->Load("Assets\\sample.png");
 }
 
 void Quad::PassDataToCB(Transform transform)

@@ -15,6 +15,8 @@ cbuffer global
 	float4x4	matW;	//ワールド行列
 	float4		diffuseColor;		// ディフューズカラー（マテリアルの色）
 	bool		isTexture;		// テクスチャ貼ってあるかどうか
+    float3		Cam;//カメラ座標
+    float4		light;//カメラ
 };
 
 //───────────────────────────────────────
@@ -42,8 +44,6 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 
 	//法線を回転
 	normal =mul(normal,matW);
-
-	float4 light = float4(-1, 0.9, -0.7, 0);
 	light = normalize(light);
 	outData.color = clamp(dot(normal, light), 0, 1);
 	//まとめて出力
@@ -55,10 +55,13 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 //───────────────────────────────────────
 float4 PS(VS_OUT inData) : SV_Target
 {
-	float4 lightsourse = float4(1.0,1.0,1.0,0.0);
-	float4 ambientSourse = float4(0.15, 0.15, 0.15, 1);
-	float4 diffuse = { 0, 0, 0, 0 };
-	float4 ambient = { 0,0,0,0 };
+    float4 lightsourse = float4(1.0, 1.0, 1.0, 0.0);
+    float4 ambientSourse = float4(0.15, 0.15, 0.15, 1);
+    float4 diffuse = { 0, 0, 0, 0 };
+    float4 ambient = { 0, 0, 0, 0 };
+    float4 specular ={ 0, 0, 0, 0 };
+    float Ks = 2.0;
+    float n = 8.0;
 	if (isTexture)
 	{
 		diffuse = lightsourse * g_texture.Sample(g_sampler, inData.uv) * inData.color;
@@ -69,6 +72,6 @@ float4 PS(VS_OUT inData) : SV_Target
 		diffuse = lightsourse * diffuseColor * inData.color;
 		ambient= lightsourse *diffuseColor* ambientSourse;
 	}
-	return (diffuse + ambient);
+	return (diffuse + ambient+specular);
 
 }

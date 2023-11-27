@@ -96,6 +96,9 @@ void Fbx::Draw(Transform& transform)
 		cb.matNormal = XMMatrixTranspose(transform.GetNormalMatrix());
 		cb.isTexture = pMaterialList_[i].pTexture != nullptr;
 		cb.diffuseColor = pMaterialList_[i].diffuse;
+		cb.Cam = Camera::GetDir();
+		cb.light = { -1, 0.9, -0.7, 0 };
+
 
 		D3D11_MAPPED_SUBRESOURCE pdata;
 		Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
