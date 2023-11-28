@@ -12,11 +12,11 @@ SamplerState	g_sampler : register(s0);	//サンプラー
 cbuffer global
 {
 	float4x4	matWVP;			// ワールド・ビュー・プロジェクションの合成行列
-	float4x4	matW;	//ワールド行列
+	float4x4	matW;			//ワールド行列
 	float4		diffuseColor;		// ディフューズカラー（マテリアルの色）
-	bool		isTexture;		// テクスチャ貼ってあるかどうか
-    float3		Cam;//カメラ座標
-    float4		light;//カメラ
+    float4		Cam;//カメラ座標
+	float4		light;//カメラ
+    bool isTexture; // テクスチャ貼ってあるかどうか
 };
 
 //───────────────────────────────────────
@@ -44,7 +44,8 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 
 	//法線を回転
 	normal =mul(normal,matW);
-	light = normalize(light);
+	
+    
 	outData.color = clamp(dot(normal, light), 0, 1);
 	//まとめて出力
 	return outData;

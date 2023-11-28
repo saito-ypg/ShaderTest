@@ -96,8 +96,9 @@ void Fbx::Draw(Transform& transform)
 		cb.matNormal = XMMatrixTranspose(transform.GetNormalMatrix());
 		cb.isTexture = pMaterialList_[i].pTexture != nullptr;
 		cb.diffuseColor = pMaterialList_[i].diffuse;
-		cb.Cam = Camera::GetDir();
-		cb.light = { -1, 0.9, -0.7, 0 };
+		XMStoreFloat4(&cb.Cam,XMVector4Normalize(Camera::GetPosition()));
+		const XMVECTOR lightDir = { -1, 0.9, -0.7, 0 };
+		XMStoreFloat4(&cb.light, lightDir);
 
 
 		D3D11_MAPPED_SUBRESOURCE pdata;

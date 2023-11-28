@@ -23,9 +23,9 @@ private:
 		XMMATRIX	matWVP;
 		XMMATRIX	matNormal;
 		XMFLOAT4	diffuseColor;		// ディフューズカラー（マテリアルの色）
-		int			isTexture;		// テクスチャ貼ってあるかどうか
-		XMFLOAT3	Cam;//カメラの視点
+		XMFLOAT4	Cam;//カメラの視点,normalize
 		XMFLOAT4	light;
+		BOOL			isTexture;		// テクスチャ貼ってあるかどうか
 	};
 
 	struct VERTEX
