@@ -69,7 +69,8 @@ float4 PS(VS_OUT inData) : SV_Target
     float Ks = 2.0;
     float n = 8.0;
 	
-    float4 R = normalize(2 * inData.normal * dot(inData.normal, light) - light);
+    float4 lightW = mul(light, matW);
+    float4 R = normalize(2 * inData.normal * dot(inData.normal, lightW) - lightW);
     float4 rvpa = pow(saturate(dot(R, inData.campos)), n);
 	
 	if (isTexture)
