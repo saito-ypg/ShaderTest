@@ -33,9 +33,9 @@ HRESULT Texture::Load(std::string fileName)
 	D3D11_SAMPLER_DESC  SamDesc;
 	ZeroMemory(&SamDesc, sizeof(D3D11_SAMPLER_DESC));
 	SamDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-	SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-	SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
 	hr=Direct3D::pDevice_->CreateSamplerState(&SamDesc, &pSampler_);
 	if (FAILED(hr))
 	{
