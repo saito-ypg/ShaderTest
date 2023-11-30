@@ -16,7 +16,7 @@ cbuffer global
 	float4		diffuseColor;		// ディフューズカラー（マテリアルの色）
     float4		Cam;//カメラ座標
 	float4		light;//カメラ
-    bool isTexture; // テクスチャ貼ってあるかどうか
+    bool		isTexture; // テクスチャ貼ってあるかどうか
 };
 
 //───────────────────────────────────────
@@ -24,9 +24,11 @@ cbuffer global
 //───────────────────────────────────────
 struct VS_OUT
 {
-	float4 pos    : SV_POSITION;	//位置
-	float2 uv	: TEXCOORD;	//UV座標
+	float4 pos		: SV_POSITION;	//位置
+	float2 uv		: TEXCOORD;	//UV座標
 	float4 color	: COLOR;	//色（明るさ）
+    float4 campos	: CAM;
+    float4 normal	: NORMAL;
 };
 
 //───────────────────────────────────────
@@ -44,6 +46,9 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 
 	//法線を回転
 	normal =mul(normal,matW);
+    outData.normal = normal;
+	//視線ベクトル
+    outData.campos = normalize(mul(Cam, matW) - mul(pos, matW));
 	
     
 	outData.color = clamp(dot(normal, light), 0, 1);
@@ -63,16 +68,22 @@ float4 PS(VS_OUT inData) : SV_Target
     float4 specular ={ 0, 0, 0, 0 };
     float Ks = 2.0;
     float n = 8.0;
+	
+    float4 R = normalize(2 * inData.normal * dot(inData.normal, light) - light);
+    float4 rvpa = pow(saturate(dot(R, inData.campos)), n);
+	
 	if (isTexture)
 	{
 		diffuse = lightsourse * g_texture.Sample(g_sampler, inData.uv) * inData.color;
 		ambient = lightsourse * g_texture.Sample(g_sampler, inData.uv) * ambientSourse;
-	}
-	else
-	{
-		diffuse = lightsourse * diffuseColor * inData.color;
-		ambient= lightsourse *diffuseColor* ambientSourse;
-	}
-	return (diffuse + ambient+specular);
+        specular = lightsourse * g_texture.Sample(g_sampler, inData.uv) * rvpa;
+    }
+	//else
+	//{
+	//	diffuse = lightsourse * diffuseColor * inData.color;
+	//	ambient= lightsourse *diffuseColor* ambientSourse;
+ //       specular = lightsourse * diffuseColor * rvpa;
+ //   }
+	return (/*diffuse + ambient+*/specular);
 
 }

@@ -11,16 +11,15 @@ ShaderScene::ShaderScene(GameObject* parent):GameObject(parent,"ShaderScene")
 void ShaderScene::Initialize()
 {
 	hModel_.push_back(Model::Load("Assets\\ground.fbx"));
-	//hModel_.push_back(Model::Load("Assets\\sphere.fbx"));
-	hModel_.push_back(Model::Load("Assets\\tile.fbx"));
+	hModel_.push_back(Model::Load("Assets\\sphere.fbx"));
+
 	for (auto i : hModel_)
 	{
 		assert(i >= 0);
 	}
-	Camera::SetPosition(XMFLOAT3(-3, 10, -10));
-	//Instantiate<AxisArrow>(this);
-	st_.position_.y += 2;
-	st_.scale_ = { 5,5,5 };
+	Camera::SetPosition(XMFLOAT3(3, 10,-10));
+	Instantiate<AxisArrow>(this);
+
 }
 
 void ShaderScene::Update()
@@ -36,7 +35,8 @@ void ShaderScene::Draw()
 	{
 		Model::Draw(i);
 	}
-	
+	Transform qt = st_;
+	qt.scale_=Transform::Float3Add(qt.scale_, XMFLOAT3{1.5f,1.5f,1.5f});
 }
 
 void ShaderScene::Release()
