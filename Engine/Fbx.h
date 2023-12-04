@@ -20,12 +20,13 @@ private:
 	};
 	struct CONSTANT_BUFFER
 	{
-		XMMATRIX	matWVP;
-		XMMATRIX	matNormal;
-		XMFLOAT4	diffuseColor;		// ディフューズカラー（マテリアルの色）
+		XMMATRIX	matWVP;//wvp ワールドビュープロジェクション
+		XMMATRIX	matW;//w ワールド変換
+		XMMATRIX	matNormal;//スケール*平行移動の逆行列
+		XMFLOAT4	diffuseColor;		// マテリアルの色(FBXからとってくる）
 		XMFLOAT4	Cam;//カメラの視点,normalize
-		XMFLOAT4	light;
-		BOOL			isTexture;		// テクスチャ貼ってあるかどうか
+		XMFLOAT4	lightPosition;
+		BOOL		isTexture;		// テクスチャ貼ってあるかどうか
 	};
 
 	struct VERTEX
@@ -43,6 +44,7 @@ private:
 	ID3D11Buffer* pConstantBuffer_;
 	MATERIAL* pMaterialList_;//マテリアルのポインタ。後で配列になる可能性
 	int* indexCount_;
+	XMFLOAT3 light_;//ライト位置
 public:
 
 	Fbx();
@@ -51,7 +53,7 @@ public:
 	void    Draw(Transform& transform);
 	void    Release();
 	void SetDiffuse(XMFLOAT4 rgba);
-
+	void Setlight(XMFLOAT3 lightpos);
 private:
 	void PassDataToCB(Transform transform,int i);
 	void SetBufferToPipeline(int i);

@@ -6,7 +6,7 @@ class ShaderScene:public GameObject
 {
     std::vector<int> hModel_;
     Transform st_;
-
+    XMFLOAT3 lightpos_;
 public:
     ShaderScene(GameObject* parent);
     void Initialize() override;

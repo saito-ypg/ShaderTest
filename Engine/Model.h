@@ -22,5 +22,7 @@ namespace Model
 	/// <param name="hModel">ハンドル</param>
 	/// <param name="rgba">RGBA 0~255</param>
 	void SetDiffuse(int hModel, XMFLOAT4 rgba);
+	void SetLight(int hModel, XMFLOAT3 lightpos);//モデル指定
+	void SetLight(XMFLOAT3 lightpos);//全部
 }
 

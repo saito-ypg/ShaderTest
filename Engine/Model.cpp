@@ -72,3 +72,16 @@ void Model::SetDiffuse(int hModel, XMFLOAT4 rgba)
 	XMFLOAT4 color{ rgba.x / 256.0f,rgba.y / 256.0f,rgba.z / 256.0f,rgba.w / 256.0f };
 	modelList_.at(hModel)->pFbx_->SetDiffuse(color);
 }
+
+void Model::SetLight(int hModel, XMFLOAT3 lightpos)
+{
+	modelList_.at(hModel)->pFbx_->Setlight(lightpos);
+}
+
+void Model::SetLight(XMFLOAT3 lightpos)
+{
+	for (auto i : modelList_)
+	{
+		i->pFbx_->Setlight(lightpos);
+	}
+}

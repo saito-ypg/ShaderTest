@@ -93,12 +93,13 @@ void Fbx::Draw(Transform& transform)
 	{
 		CONSTANT_BUFFER cb;
 		cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
+		cb.matW = XMMatrixTranspose(transform.GetWorldMatrix());
 		cb.matNormal = XMMatrixTranspose(transform.GetNormalMatrix());
 		cb.isTexture = pMaterialList_[i].pTexture != nullptr;
 		cb.diffuseColor = pMaterialList_[i].diffuse;
 		XMStoreFloat4(&cb.Cam,Camera::GetPosition());
-		const XMVECTOR lightDir = { -1, 0.9, -0.7, 0 };
-		XMStoreFloat4(&cb.light, lightDir);
+		const XMVECTOR lightDir = { light_.x, light_.y, light_.z, 0 };
+		XMStoreFloat4(&cb.lightPosition, lightDir);
 
 
 		D3D11_MAPPED_SUBRESOURCE pdata;
@@ -151,6 +152,12 @@ void Fbx::SetDiffuse(XMFLOAT4 rgba)
 		pMaterialList_[i].diffuse = rgba;
 	}
 }
+
+void Fbx::Setlight(XMFLOAT3 lightpos)
+{
+	this->light_ = lightpos;
+}
+
 
 //頂点バッファ準備
 HRESULT Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
