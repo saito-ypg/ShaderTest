@@ -273,7 +273,7 @@ HRESULT Direct3D::InitShader3DEffected()
 	D3DCompileFromFile(L"Effect3D.hlsl", nullptr, nullptr, "VS", "vs_5_0", NULL, 0, &pCompileVS, NULL);
 	assert(pCompileVS != nullptr);
 
-	HRESULT	hr = pDevice_->CreateVertexShader(pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), NULL, &(shaderBundle[SHADER_3D].pVertexShader_));
+	HRESULT	hr = pDevice_->CreateVertexShader(pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), NULL, &(shaderBundle[SHADER_3DE].pVertexShader_));
 	if (FAILED(hr))
 	{
 		MessageBox(nullptr, "頂点シェーダーの作成に失敗しました", "エラー", MB_OK);
@@ -286,7 +286,7 @@ HRESULT Direct3D::InitShader3DEffected()
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, sizeof(XMVECTOR) , D3D11_INPUT_PER_VERTEX_DATA, 0 },//UV座標
 		{ "NORMAL",	0, DXGI_FORMAT_R32G32B32_FLOAT, 0, sizeof(XMVECTOR) * 2 ,	D3D11_INPUT_PER_VERTEX_DATA, 0 },//法線
 	};
-	hr = pDevice_->CreateInputLayout(layout, 3, pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), &(shaderBundle[SHADER_3D].pVertexLayout_));
+	hr = pDevice_->CreateInputLayout(layout, 3, pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), &(shaderBundle[SHADER_3DE].pVertexLayout_));
 	if (FAILED(hr))
 	{
 		MessageBox(nullptr, "頂点インプットレイアウトの作成に失敗しました", "エラー", MB_OK);
@@ -301,7 +301,7 @@ HRESULT Direct3D::InitShader3DEffected()
 	hr = D3DCompileFromFile(L"Effect3D.hlsl", nullptr, nullptr, "PS", "ps_5_0", NULL, 0, &pCompilePS, NULL);
 	assert(pCompilePS != nullptr);
 
-	hr = pDevice_->CreatePixelShader(pCompilePS->GetBufferPointer(), pCompilePS->GetBufferSize(), NULL, &(shaderBundle[SHADER_3D].pPixelShader_));
+	hr = pDevice_->CreatePixelShader(pCompilePS->GetBufferPointer(), pCompilePS->GetBufferSize(), NULL, &(shaderBundle[SHADER_3DE].pPixelShader_));
 	if (FAILED(hr))
 	{
 		MessageBox(nullptr, "ピクセルシェーダの作成に失敗しました", "エラー", MB_OK);

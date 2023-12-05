@@ -28,9 +28,10 @@ struct VS_OUT
 	float4 pos		: SV_POSITION;	//位置
 	float2 uv		: TEXCOORD;	//UV座標
 	float4 color	: COLOR;	//色（明るさ）
-    //float4 campos : CAM;
-    //float4 normal : NORMAL;
-    float4 posW : posWorld;
+    float4 campos   : TEXCOORD1;
+    float4 normal   : TEXCOORD2;
+    float4 light    : TEXCOORD3;
+    //float4 posW : posWorld;
 };
 
 //───────────────────────────────────────
@@ -47,13 +48,21 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 	outData.uv = uv.xy;
 
 	//法線を回転
+    normal.w = 0;
 	normal =mul(normal,matN);
-    //outData.normal = normal;
-    //視線ベクトル
-    //outData.campos = normalize(mul(Cam, matW) - mul(pos, matW));
-	
-    float4 pointlight = light - pos;
-	outData.color = clamp(dot(normal,normalize(light)), 0, 1);
+    normal = normalize(normal);
+    outData.normal = normal;
+ 
+
+    //outData.light = normalize(light);
+    float4 light_ = normalize(light);
+    outData.light = normalize(light_);
+    
+    
+    
+    outData.color = saturate(dot(normal, light_));//ランバートdiffuse用
+    float4 posw = mul(pos, matW); //視線ベクトル
+    outData.campos = Cam - posw;
 	//まとめて出力
 	return outData;
 }
@@ -67,26 +76,26 @@ float4 PS(VS_OUT inData) : SV_Target
     float4 ambientSourse = float4(0.15, 0.15, 0.15, 1);
     float4 diffuse = { 0, 0, 0, 0 };
     float4 ambient = { 0, 0, 0, 0 };
-    //float4 specular ={ 0, 0, 0, 0 };
+    float4 specular = { 0, 0, 0, 0 };
     //float Ks = 2.0;
-    //float n = 8.0;
+    float n = 8.0;
 	
-    //float4 lightW = mul(light, matW);
-    //float4 R = normalize(2 * inData.normal * dot(inData.normal, lightW) - lightW);
-    //float4 rvpa = pow(saturate(dot(R, inData.campos)), n);
-   // specular = lightsourse * Ks * rvpa;
+    float4 NL = dot(inData.light,inData.normal);
+    float4 R = normalize(2 * NL * inData.normal - inData.light);
+    specular = pow(saturate(dot(R, normalize(inData.campos))), n);
+    
+    
+
 	if (isTexture)
 	{
 		diffuse = lightsourse * g_texture.Sample(g_sampler, inData.uv) * inData.color;
 		ambient = lightsourse * g_texture.Sample(g_sampler, inData.uv) * ambientSourse;
-
     }
     else
     {
         diffuse = lightsourse * diffuseColor * inData.color;
         ambient = lightsourse * diffuseColor * ambientSourse;
-
     }
-    return (diffuse + ambient /*+ specular*/);
+    return (diffuse + ambient + specular);
 
 }
