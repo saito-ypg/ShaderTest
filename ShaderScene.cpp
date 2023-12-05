@@ -11,15 +11,16 @@ ShaderScene::ShaderScene(GameObject* parent):GameObject(parent,"ShaderScene")
 
 void ShaderScene::Initialize()
 {
-	hModel_.push_back(Model::Load("Assets\\ground.fbx"));
+	/*hModel_.push_back(Model::Load("Assets\\ground.fbx"));
 	hModel_.push_back(Model::Load("Assets\\sphere.fbx"));
-	hModel_.push_back(Model::Load("Assets\\lightSphere.fbx"));
+	hModel_.push_back(Model::Load("Assets\\lightSphere.fbx"));*/
+	hModel_.push_back(Model::Load("Assets\\torus.fbx"));
 	for (auto i : hModel_)
 	{
 		assert(i >= 0);
 	}
 	Camera::SetPosition(XMFLOAT3(3, 10,-10));
-	Instantiate<AxisArrow>(this);
+	//Instantiate<AxisArrow>(this);
 	Model::SetLight(lightpos_);
 
 }
@@ -62,11 +63,12 @@ void ShaderScene::Update()
 
 void ShaderScene::Draw()
 {
-	Model::SetTransform(hModel_.at(0), transform_);
-	Model::SetTransform(hModel_.at(1),st_);
-	Transform lightT;
-	lightT.position_ = lightpos_;
-	Model::SetTransform(hModel_.at(2), lightT);
+	for (auto i : hModel_)
+	{Model::SetTransform(i, transform_);}
+	//Model::SetTransform(hModel_.at(1),st_);
+	//Transform lightT;
+	//lightT.position_ = lightpos_;
+	//Model::SetTransform(hModel_.at(2), lightT);
 	for (auto i : hModel_)
 	{
 		Model::Draw(i);
