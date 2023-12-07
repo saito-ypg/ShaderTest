@@ -16,17 +16,23 @@ private:
 	struct MATERIAL
 	{
 		Texture* pTexture;
-		XMFLOAT4	diffuse;
+		XMFLOAT4 diffuse;
+		XMFLOAT4 ambient;
+		XMFLOAT4 specular;//反射強度・色
+		float shininess;//ハイライトの強さ・サイズ
 	};
 	struct CONSTANT_BUFFER
 	{
 		XMMATRIX	matWVP;//wvp ワールドビュープロジェクション
 		XMMATRIX	matW;//w ワールド変換
 		XMMATRIX	matNormal;//スケール*平行移動の逆行列
-		XMFLOAT4	diffuseColor;		// マテリアルの色(FBXからとってくる）
+		XMFLOAT4	diffuseColor;	// マテリアルの色(FBXからとってくる）
+		XMFLOAT4	ambientColor;	//環境光
+		XMFLOAT4	specular;		//反射光
 		XMFLOAT4	Cam;//カメラの視点,normalize
 		XMFLOAT4	lightPosition;
-		BOOL		isTexture;		// テクスチャ貼ってあるかどうか
+		bool		isTexture;		// テクスチャ貼ってあるかどうか
+		float		shininess;//ハイライトの強さ
 	};
 
 	struct VERTEX

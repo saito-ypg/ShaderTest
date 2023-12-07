@@ -15,10 +15,13 @@ cbuffer global
 	float4x4	matW;			//ワールド行列
     float4x4    matN;           //法線変換行列
 	float4		diffuseColor;		// ディフューズカラー（マテリアルの色）
+    float4      ambientColor;
+    float4      specularColor;
     float4		Cam;//カメラ座標
 	float4		light;//光源座標、これをもとに平行光源にする
     bool		isTexture; // テクスチャ貼ってあるかどうか
-};
+    float       shininess;
+    };
 
 //───────────────────────────────────────
 // 頂点シェーダー出力＆ピクセルシェーダー入力データ構造体
@@ -73,7 +76,6 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 float4 PS(VS_OUT inData) : SV_Target
 {
     float4 lightsourse = float4(1.0, 1.0, 1.0, 0.0);
-    float4 ambientSourse = float4(0.15, 0.15, 0.15, 1);
     float4 diffuse = { 0, 0, 0, 0 };
     float4 ambient = { 0, 0, 0, 0 };
     float4 specular = { 0, 0, 0, 0 };
@@ -82,19 +84,19 @@ float4 PS(VS_OUT inData) : SV_Target
 	
     float4 NL = dot(inData.light,inData.normal);
     float4 R = normalize(2 * NL * inData.normal - inData.light);
-    specular = pow(saturate(dot(R, normalize(inData.campos))), n);
+    specular = pow(saturate(dot(R, normalize(inData.campos))),n)*specularColor;
     
     
 
 	if (isTexture)
 	{
 		diffuse = lightsourse * g_texture.Sample(g_sampler, inData.uv) * inData.color;
-		ambient = lightsourse * g_texture.Sample(g_sampler, inData.uv) * ambientSourse;
+		ambient = lightsourse * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
     }
     else
     {
         diffuse = lightsourse * diffuseColor * inData.color;
-        ambient = lightsourse * diffuseColor * ambientSourse;
+        ambient = lightsourse * diffuseColor * ambientColor;
     }
     return (diffuse + ambient + specular);
 
