@@ -4,9 +4,28 @@
 #include"Engine/Camera.h"
 #include"AxisArrow.h"
 #include"Engine/Input.h"
-ShaderScene::ShaderScene(GameObject* parent):GameObject(parent,"ShaderScene")
+#include<d3d11.h>
+
+namespace {
+	const XMFLOAT3 DEF_LIGHT_POSITION = { -1,3,0 };
+}
+
+void ShaderScene::InitConstantBuffer()
+{//コンスタントバッファ作成
+	D3D11_BUFFER_DESC cb;
+	cb.ByteWidth = sizeof(CB_STAGESCENE);
+	cb.Usage = D3D11_USAGE_DYNAMIC;
+	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cb.MiscFlags = 0;
+	cb.StructureByteStride = 0;
+
+	// コンスタントバッファの作成
+	Direct3D::pDevice_->CreateBuffer(&cb, nullptr, &pCBStageScene_);
+}
+ShaderScene::ShaderScene(GameObject* parent):GameObject(parent,"ShaderScene"),lightpos_(DEF_LIGHT_POSITION)
 {
-	lightpos_ = { 3,4,1 };
+
 }
 
 void ShaderScene::Initialize()
@@ -23,6 +42,8 @@ void ShaderScene::Initialize()
 	//Instantiate<AxisArrow>(this);
 	Model::SetLight(lightpos_);
 
+
+	InitConstantBuffer();
 }
 
 void ShaderScene::Update()
@@ -59,6 +80,9 @@ void ShaderScene::Update()
 		Model::SetLight(lightpos_);
 	}
 	st_.rotate_.y++;
+
+
+	PassDatatoStageCB();
 }
 
 void ShaderScene::Draw()
@@ -79,4 +103,12 @@ void ShaderScene::Draw()
 
 void ShaderScene::Release()
 {
+}
+void ShaderScene::PassDatatoStageCB() {
+	CB_STAGESCENE cb;
+	cb.lightPosition = GetLightPos();
+	XMStoreFloat4(&cb.Cam, Camera::GetPosition());
+	Direct3D::pContext_->UpdateSubresource(pCBStageScene_, 0, NULL, &cb, 0, 0);
+	Direct3D::pContext_->VSSetConstantBuffers(1, 1, &pCBStageScene_);
+	Direct3D::pContext_->PSSetConstantBuffers(1, 1, &pCBStageScene_);
 }
