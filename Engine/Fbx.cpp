@@ -90,12 +90,53 @@ void Fbx::Draw(Transform& transform)
 	//コンスタントバッファに情報を渡す
 	
 	for (int i = 0; i < materialCount_; i++)
-	{
+	{/*
 		PassDataToCB(transform, i);
 		
-		SetBufferToPipeline(i);
+		SetBufferToPipeline(i);*/
+		CONSTANT_BUFFER cb;
+		cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
+	cb.matW = XMMatrixTranspose(transform.GetWorldMatrix());
+	cb.matNormal = XMMatrixTranspose(transform.GetNormalMatrix());
+	cb.isTexture = pMaterialList_[i].pTexture != nullptr;
+	cb.diffuseColor = pMaterialList_[i].diffuse;
+	cb.ambientColor = pMaterialList_[i].ambient;
+	cb.specular = pMaterialList_[i].specular;
+	cb.shininess = pMaterialList_[i].shininess;
 
-	
+		//XMStoreFloat4(&cb.Cam, Camera::GetPosition());
+		//const XMVECTOR lightDir = { -1, 0.9, -0.7, 0 };
+		//XMStoreFloat4(&cb.light, lightDir);
+		//const XMVECTOR lightDir = { light_.x, light_.y, light_.z, 0 };
+		//XMStoreFloat4(&cb.lightPosition, lightDir);
+
+
+		//D3D11_MAPPED_SUBRESOURCE pdata;
+		//Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
+		//memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る
+		Direct3D::pContext_->UpdateSubresource(pConstantBuffer_, 0, NULL, &cb, 0, 0);
+		if (pMaterialList_[i].pTexture)
+		{
+
+			ID3D11SamplerState* pSampler = pMaterialList_[i].pTexture->GetSampler();
+			Direct3D::pContext_->PSSetSamplers(0, 1, &pSampler);
+			ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pTexture->GetSRV();
+			Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
+		}
+
+		//Direct3D::pContext_->Unmap(pConstantBuffer_, 0);	//再開
+		//頂点バッファ、インデックスバッファ、コンスタントバッファをパイプラインにセット
+		//頂点バッファ
+		UINT stride = sizeof(VERTEX);
+		UINT offset = 0;
+		Direct3D::pContext_->IASetVertexBuffers(0, 1, &pVertexBuffer_, &stride, &offset);
+		// インデックスバッファーをセット
+		stride = sizeof(int);
+		offset = 0;
+		Direct3D::pContext_->IASetIndexBuffer(pIndexBuffer_[i], DXGI_FORMAT_R32_UINT, 0);
+		//コンスタントバッファ
+		Direct3D::pContext_->VSSetConstantBuffers(0, 1, &pConstantBuffer_);	//頂点シェーダー用	
+		Direct3D::pContext_->PSSetConstantBuffers(0, 1, &pConstantBuffer_);	//ピクセルシェーダー
 		//描画
 		Direct3D::pContext_->DrawIndexed(indexCount_[i], 0, 0);
 	}
@@ -226,9 +267,9 @@ HRESULT Fbx::InitConstantBuffer()//コンスタントバッファ準備
 	//コンスタントバッファ作成
 	D3D11_BUFFER_DESC cb;
 	cb.ByteWidth = sizeof(CONSTANT_BUFFER);
-	cb.Usage = D3D11_USAGE_DYNAMIC;
+	cb.Usage = D3D11_USAGE_DEFAULT;
 	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cb.CPUAccessFlags = 0;
 	cb.MiscFlags = 0;
 	cb.StructureByteStride = 0;
 
@@ -248,19 +289,25 @@ void Fbx::PassDataToCB(Transform transform,int i)
 	cb.ambientColor = pMaterialList_[i].ambient;
 	cb.specular = pMaterialList_[i].specular;
 	cb.shininess = pMaterialList_[i].shininess;
-	/*XMStoreFloat4(&cb.Cam, Camera::GetPosition());
-	const XMVECTOR lightDir = { light_.x, light_.y, light_.z, 0 };
-	XMStoreFloat4(&cb.lightPosition, lightDir);*/
 
 
-	D3D11_MAPPED_SUBRESOURCE pdata;
-	Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
-	memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る
-	Direct3D::pContext_->Unmap(pConstantBuffer_, 0);	//再開
+
+	//D3D11_MAPPED_SUBRESOURCE pdata;
+	//Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
+	//memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る
+	//Direct3D::pContext_->Unmap(pConstantBuffer_, 0);	//再開
 	
 	//どこかでisTextureがtrueになったままになってる。此処じゃない
+	Direct3D::pContext_->UpdateSubresource(pConstantBuffer_, 0, NULL, &cb, 0, 0);
 
-
+	if (pMaterialList_[i].pTexture)
+	{
+		ID3D11SamplerState* pSampler = pMaterialList_[i].pTexture->GetSampler();
+		Direct3D::pContext_->PSSetSamplers(0, 1, &pSampler);
+		ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pTexture->GetSRV();
+		Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
+	}
+	
 }
 
 void Fbx::SetBufferToPipeline(int i)
@@ -278,15 +325,6 @@ void Fbx::SetBufferToPipeline(int i)
 	//コンスタントバッファ
 	Direct3D::pContext_->VSSetConstantBuffers(0, 1, &pConstantBuffer_);	//頂点シェーダー用	
 	Direct3D::pContext_->PSSetConstantBuffers(0, 1, &pConstantBuffer_);	//ピクセルシェーダー用
-
-	if (pMaterialList_[i].pTexture)
-	{
-
-		ID3D11SamplerState* pSampler = pMaterialList_[i].pTexture->GetSampler();
-		Direct3D::pContext_->PSSetSamplers(0, 1, &pSampler);
-		ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pTexture->GetSRV();
-		Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
-	}
 }
 
 HRESULT Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
