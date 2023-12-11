@@ -17,7 +17,7 @@ cbuffer global : register(b0)
 	float4		diffuseColor;		// ディフューズカラー（マテリアルの色）
     float4      ambientColor;
     float4      specularColor;
-    float4     shininess;
+    float    shininess;
     bool isTexture; // テクスチャ貼ってあるかどうか
 };
 cbuffer global : register(b1)
@@ -81,7 +81,7 @@ float4 PS(VS_OUT inData) : SV_Target
     float4 diffuse = { 0, 0, 0, 0 };
     float4 ambient = { 0, 0, 0, 0 };
     float4 specular = { 0, 0, 0, 0 };
-    float n=shininess.x;
+    float n=shininess;
     float4 NL = saturate(dot(inData.normal, inData.light));
     float4 R = normalize(2 * NL * inData.normal - inData.light);
     specular = pow(saturate(dot(R, normalize(inData.campos))),n)*specularColor;
