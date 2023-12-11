@@ -246,7 +246,7 @@ void Fbx::PassDataToCB(Transform transform,int i)
 	cb.diffuseColor = pMaterialList_[i].diffuse;
 	cb.ambientColor = pMaterialList_[i].ambient;
 	cb.specular = pMaterialList_[i].specular;
-	cb.shininess = pMaterialList_[i].shininess;
+	cb.shininess =XMFLOAT4( pMaterialList_[i].shininess,0,0,0);
 
 
 

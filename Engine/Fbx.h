@@ -31,8 +31,8 @@ private:
 		XMFLOAT4	specular;		//反射光
 		//XMFLOAT4	Cam;//カメラの視点,normalize
 		//XMFLOAT4	lightPosition;
-		bool		isTexture;		// テクスチャ貼ってあるかどうか
-		float		shininess;//ハイライトの強さ
+		XMFLOAT4		shininess;//ハイライトの強さ
+		BOOL		isTexture;		// テクスチャ貼ってあるかどうか
 	};
 
 	struct VERTEX

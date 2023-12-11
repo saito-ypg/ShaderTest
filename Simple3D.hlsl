@@ -17,9 +17,9 @@ cbuffer global : register(b0)
 	float4		diffuseColor;		// ディフューズカラー（マテリアルの色）
     float4      ambientColor;
     float4      specularColor;
-    bool		isTexture; // テクスチャ貼ってあるかどうか
-    float       shininess;
-    };
+    float4      shininess;
+    bool isTexture; // テクスチャ貼ってあるかどうか
+};
 cbuffer global : register(b1)
 {
     float4 Cam; //カメラ座標
