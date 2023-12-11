@@ -41,7 +41,7 @@ void ShaderScene::Initialize()
 	{
 		assert(i >= 0);
 	}
-	Camera::SetPosition(XMFLOAT3(3, 10,-10));
+	Camera::SetPosition(XMFLOAT3(3, 10,10));
 	Instantiate<AxisArrow>(this);
 	Model::SetLight(lightpos_);
 

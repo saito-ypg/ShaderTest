@@ -24,6 +24,6 @@ public:
     void Release() override;
 
     void SetLightpos(XMFLOAT3& _pos) { lightpos_ = _pos; };
-    XMFLOAT4 GetLightPos() { return XMFLOAT4(lightpos_.x, lightpos_.y, lightpos_.z, 0); }
+    XMFLOAT4 GetLightPos() { return XMFLOAT4(lightpos_.x, lightpos_.y, lightpos_.z, 1.0f); }
 };
 
