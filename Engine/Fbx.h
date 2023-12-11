@@ -29,8 +29,8 @@ private:
 		XMFLOAT4	diffuseColor;	// マテリアルの色(FBXからとってくる）
 		XMFLOAT4	ambientColor;	//環境光
 		XMFLOAT4	specular;		//反射光
-		XMFLOAT4	Cam;//カメラの視点,normalize
-		XMFLOAT4	lightPosition;
+		//XMFLOAT4	Cam;//カメラの視点,normalize
+		//XMFLOAT4	lightPosition;
 		bool		isTexture;		// テクスチャ貼ってあるかどうか
 		float		shininess;//ハイライトの強さ
 	};

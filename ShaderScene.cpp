@@ -21,9 +21,12 @@ void ShaderScene::InitConstantBuffer()
 	cb.StructureByteStride = 0;
 
 	// コンスタントバッファの作成
-	Direct3D::pDevice_->CreateBuffer(&cb, nullptr, &pCBStageScene_);
+	if (FAILED(Direct3D::pDevice_->CreateBuffer(&cb, nullptr, &pCBStageScene_)))
+	{
+		MessageBox(NULL, "コンスタントバッファの初期化に失敗しました", "Stage", MB_OK);
+	}
 }
-ShaderScene::ShaderScene(GameObject* parent):GameObject(parent,"ShaderScene"),lightpos_(DEF_LIGHT_POSITION)
+ShaderScene::ShaderScene(GameObject* parent):GameObject(parent,"ShaderScene"),lightpos_(DEF_LIGHT_POSITION),pCBStageScene_(nullptr)
 {
 
 }
@@ -108,7 +111,11 @@ void ShaderScene::PassDatatoStageCB() {
 	CB_STAGESCENE cb;
 	cb.lightPosition = GetLightPos();
 	XMStoreFloat4(&cb.Cam, Camera::GetPosition());
-	Direct3D::pContext_->UpdateSubresource(pCBStageScene_, 0, NULL, &cb, 0, 0);
+//	Direct3D::pContext_->UpdateSubresource(pCBStageScene_, 0, NULL, &cb, 0, 0);
+	D3D11_MAPPED_SUBRESOURCE pdata;
+	Direct3D::pContext_->Map(pCBStageScene_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
+	memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る
+	Direct3D::pContext_->Unmap(pCBStageScene_, 0);	//再開
 	Direct3D::pContext_->VSSetConstantBuffers(1, 1, &pCBStageScene_);
 	Direct3D::pContext_->PSSetConstantBuffers(1, 1, &pCBStageScene_);
 }

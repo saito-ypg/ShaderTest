@@ -9,7 +9,7 @@ SamplerState	g_sampler : register(s0);	//サンプラー
 // コンスタントバッファ
 // DirectX 側から送信されてくる、ポリゴン頂点以外の諸情報の定義
 //───────────────────────────────────────
-cbuffer global
+cbuffer global : register(b0)
 {
 	float4x4	matWVP;			// ワールド・ビュー・プロジェクションの合成行列
 	float4x4	matW;			//ワールド行列
@@ -17,11 +17,14 @@ cbuffer global
 	float4		diffuseColor;		// ディフューズカラー（マテリアルの色）
     float4      ambientColor;
     float4      specularColor;
-    float4		Cam;//カメラ座標
-	float4		light;//光源座標、これをもとに平行光源にする
     bool		isTexture; // テクスチャ貼ってあるかどうか
     float       shininess;
     };
+cbuffer global : register(b1)
+{
+    float4 Cam; //カメラ座標
+    float4 light; //光源座標、これをもとに平行光源にする
+}
 
 //───────────────────────────────────────
 // 頂点シェーダー出力＆ピクセルシェーダー入力データ構造体
@@ -57,7 +60,6 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
     outData.normal = normal;
  
 
-    //outData.light = normalize(light);
     float4 light_ = normalize(light);
     outData.light = normalize(light_);
     
@@ -79,7 +81,6 @@ float4 PS(VS_OUT inData) : SV_Target
     float4 diffuse = { 0, 0, 0, 0 };
     float4 ambient = { 0, 0, 0, 0 };
     float4 specular = { 0, 0, 0, 0 };
-    //float Ks = 2.0;
     float n = 8.0;
 	
     float4 NL = dot(inData.light,inData.normal);
