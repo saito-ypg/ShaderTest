@@ -34,8 +34,8 @@ ShaderScene::ShaderScene(GameObject* parent):GameObject(parent,"ShaderScene"),li
 void ShaderScene::Initialize()
 {
 	/*hModel_.push_back(Model::Load("Assets\\ground.fbx"));
-	hModel_.push_back(Model::Load("Assets\\sphere.fbx"));
-	hModel_.push_back(Model::Load("Assets\\lightSphere.fbx"));*/
+	hModel_.push_back(Model::Load("Assets\\sphere.fbx"));*/
+	hModel_.push_back(Model::Load("Assets\\lightSphere.fbx"));
 	hModel_.push_back(Model::Load("Assets\\torus.fbx"));
 	for (auto i : hModel_)
 	{
@@ -93,9 +93,9 @@ void ShaderScene::Draw()
 	for (auto i : hModel_)
 	{Model::SetTransform(i, transform_);}
 	//Model::SetTransform(hModel_.at(1),st_);
-	//Transform lightT;
-	//lightT.position_ = lightpos_;
-	//Model::SetTransform(hModel_.at(2), lightT);
+	Transform lightT;
+	lightT.position_ = lightpos_;
+	Model::SetTransform(hModel_.at(0), lightT);
 	for (auto i : hModel_)
 	{
 		Model::Draw(i);

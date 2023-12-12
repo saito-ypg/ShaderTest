@@ -81,11 +81,13 @@ float4 PS(VS_OUT inData) : SV_Target
     float4 diffuse = { 0, 0, 0, 0 };
     float4 ambient = { 0, 0, 0, 0 };
     float4 specular = { 0, 0, 0, 0 };
-    float n=shininess;
-    float4 NL = saturate(dot(inData.normal, inData.light));
-    float4 R = normalize(2 * NL * inData.normal - inData.light);
-    specular = pow(saturate(dot(R, normalize(inData.campos))),n)*specularColor;
-    
+    if (shininess != 1.0)
+    {
+        float n = pow(shininess, 1.3);
+        float4 NL = saturate(dot(inData.normal, inData.light));
+        float4 R = normalize(2 * NL * inData.normal - inData.light);
+        specular = pow(saturate(dot(R, normalize(inData.campos))), n) * specularColor;
+    }
     
 
 	if (isTexture)
