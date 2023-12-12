@@ -36,7 +36,7 @@ struct VS_OUT
 	float4 color	: COLOR;	//êFÅiñæÇÈÇ≥Åj
     float4 campos   : TEXCOORD1;
     float4 normal   : TEXCOORD2;
-    float4 light    : TEXCOORD3;
+  //  float4 light    : TEXCOORD3;
     //float4 posW : posWorld;
 };
 
@@ -61,7 +61,7 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
  
 
     float4 light_ = normalize(light);
-    outData.light = normalize(light_);
+   
     
     
     
@@ -84,8 +84,8 @@ float4 PS(VS_OUT inData) : SV_Target
     if (shininess != 1.0)
     {
         float n = pow(shininess, 1.3);
-        float4 NL = saturate(dot(inData.normal, inData.light));
-        float4 R = normalize(2 * NL * inData.normal - inData.light);
+        float4 NL = dot(inData.normal, normalize(light));
+        float4 R = normalize(2 * NL * inData.normal - normalize(light));
         specular = pow(saturate(dot(R, normalize(inData.campos))), n) * specularColor;
     }
     
