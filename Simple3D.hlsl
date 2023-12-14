@@ -46,7 +46,7 @@ struct VS_OUT
 VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 {
 	//ピクセルシェーダーへ渡す情報
-	VS_OUT outData;
+    VS_OUT outData = (VS_OUT)0;
 
 	//ローカル座標に、ワールド・ビュー・プロジェクション行列をかけて
 	//スクリーン座標に変換し、ピクセルシェーダーへ
@@ -61,8 +61,6 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
  
 
     float4 light_ = normalize(light);
-   
-    
     
     
     outData.color = saturate(dot(normal, light_));//ランバートdiffuse用
@@ -81,14 +79,11 @@ float4 PS(VS_OUT inData) : SV_Target
     float4 diffuse = { 0, 0, 0, 0 };
     float4 ambient = { 0, 0, 0, 0 };
     float4 specular = { 0, 0, 0, 0 };
-    if (shininess != 1.0)
-    {
-        float n = pow(shininess, 1.3);
-        float4 NL = dot(inData.normal, normalize(light));
-        float4 R = normalize(2 * NL * inData.normal - normalize(light));
-        specular = pow(saturate(dot(R, normalize(inData.campos))), n) * specularColor;
-    }
     
+    float n = shininess;
+    float4 NL = dot(inData.normal, normalize(light));
+    float4 R = normalize(2 * NL * inData.normal - normalize(light));
+    specular = pow(saturate(dot(R, normalize(inData.campos))), n) * specularColor;
 
 	if (isTexture)
 	{
@@ -101,5 +96,4 @@ float4 PS(VS_OUT inData) : SV_Target
         ambient = lightsourse * diffuseColor * ambientColor;
     }
     return (diffuse + ambient + specular);
-
 }

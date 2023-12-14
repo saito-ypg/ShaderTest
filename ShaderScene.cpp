@@ -7,7 +7,7 @@
 #include<d3d11.h>
 
 namespace {
-	const XMFLOAT3 DEF_LIGHT_POSITION = { -1,3,0 };
+	const XMFLOAT3 DEF_LIGHT_POSITION = { 0,0,-1 };
 }
 
 void ShaderScene::InitConstantBuffer()
@@ -51,7 +51,16 @@ void ShaderScene::Initialize()
 
 void ShaderScene::Update()
 {
-	const float move = 0.1f;
+	static float move = 0.05f;
+	constexpr float change = 0.01f;
+	if(Input::IsKeyDown(DIK_LEFT))
+	{
+		move -= change;
+	}
+	if (Input::IsKeyDown(DIK_RIGHT))
+	{
+		move += change;
+	}
 	if (Input::IsKey(DIK_W))
 	{
 		lightpos_.z += move;
