@@ -7,7 +7,7 @@
 #include<d3d11.h>
 
 namespace {
-	const XMFLOAT3 DEF_LIGHT_POSITION = { 0,0,-1 };
+	const XMFLOAT3 DEF_LIGHT_POSITION = { 0,0,-2 };
 }
 
 void ShaderScene::InitConstantBuffer()
@@ -33,8 +33,8 @@ ShaderScene::ShaderScene(GameObject* parent):GameObject(parent,"ShaderScene"),li
 
 void ShaderScene::Initialize()
 {
-	/*hModel_.push_back(Model::Load("Assets\\ground.fbx"));
-	hModel_.push_back(Model::Load("Assets\\sphere.fbx"));*/
+	//hModel_.push_back(Model::Load("Assets\\ground.fbx"));
+	//hModel_.push_back(Model::Load("Assets\\sphere.fbx"));
 	hModel_.push_back(Model::Load("Assets\\lightSphere.fbx"));
 	hModel_.push_back(Model::Load("Assets\\torus.fbx"));
 	for (auto i : hModel_)
@@ -52,7 +52,7 @@ void ShaderScene::Initialize()
 void ShaderScene::Update()
 {
 	static float move = 0.05f;
-	constexpr float change = 0.01f;
+	constexpr float change = 0.05f;
 	if(Input::IsKeyDown(DIK_LEFT))
 	{
 		move -= change;

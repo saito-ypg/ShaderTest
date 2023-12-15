@@ -16,6 +16,9 @@
     <Filter Include="Engine">
       <UniqueIdentifier>{cf6cf47c-ed60-4307-aa1b-f78a5781b3c0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shader">
+      <UniqueIdentifier>{fa70c375-df6a-43c7-8c47-c1640521ad8f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Sprite.h">
@@ -74,9 +77,15 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Simple3D.hlsl" />
-    <FxCompile Include="Simple2D.hlsl" />
-    <FxCompile Include="Effect3D.hlsl" />
+    <FxCompile Include="Simple3D.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Simple2D.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Effect3D.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
