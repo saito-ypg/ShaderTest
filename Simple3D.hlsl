@@ -33,7 +33,7 @@ struct VS_OUT
 {
 	float4 pos		: SV_POSITION;	//位置
 	float2 uv		: TEXCOORD;	//UV座標
-	float4 color	: COLOR;	//色（明るさ）
+	float4  color	: COLOR;	//色（明るさ）
     float4 campos   : TEXCOORD1;
     float4 normal   : TEXCOORD2;
   //  float4 light    : TEXCOORD3;
@@ -84,20 +84,38 @@ float4 PS(VS_OUT inData) : SV_Target
     float4 NL = dot(inData.normal, normalize(light));
     float4 R = normalize(2 * NL * inData.normal - normalize(light));
     specular = pow(saturate(dot(R, normalize(inData.campos))), n) * specularColor;
-
     
-	if (isTexture)
-	{
-		diffuse = lightsourse * g_texture.Sample(g_sampler, inData.uv) * inData.color;
-		ambient = lightsourse * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
+    //ここで拡散反射の値いじる
+
+    if (inData.color.x < 0.2)
+    {
+        inData.color = 0.0;
+    }
+    else if (inData.color.x < 0.5)
+    {
+        inData.color = 0.5;
+    }
+    else if (inData.color.x < 0.8)
+    {
+        inData.color = 0.8;
+    }
+    else
+    {
+        inData.color = 1.0;
+    }
+    
+    
+    if (isTexture)
+    {
+        diffuse = lightsourse * g_texture.Sample(g_sampler, inData.uv) * inData.color;
+        ambient = lightsourse * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
     }
     else
     {
         diffuse = lightsourse * diffuseColor * inData.color;
         ambient = lightsourse * diffuseColor * ambientColor;
     }
-    
-    int step = diffuse / 0.125;
-    diffuse = step * 0.125;
+  
     return (diffuse/* + ambient + specular*/);
+    //return inData.color;
 }
