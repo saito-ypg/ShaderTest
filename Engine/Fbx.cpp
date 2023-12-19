@@ -80,12 +80,16 @@ HRESULT Fbx::Load(std::string fileName)
 
 	//マネージャ解放
 	pFbxManager->Destroy();
+	
+	pToonTex_ = new Texture;
+	pToonTex_->Load("Assets\\toonSlider.png");
+	
 	return S_OK;
 }
 
 void Fbx::Draw(Transform& transform)
 {
-	Direct3D::SetShader(SHADER_3D);
+	Direct3D::SetShader(SHADER_3DToon);
 	transform.Calculation();//トランスフォームを計算
 	//コンスタントバッファに情報を渡す
 	
@@ -250,12 +254,6 @@ void Fbx::PassDataToCB(Transform transform,int i)
 
 
 
-	//D3D11_MAPPED_SUBRESOURCE pdata;
-	//Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
-	//memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る
-	//Direct3D::pContext_->Unmap(pConstantBuffer_, 0);	//再開
-	
-	//どこかでisTextureがtrueになったままになってる。此処じゃない
 	Direct3D::pContext_->UpdateSubresource(pConstantBuffer_, 0, NULL, &cb, 0, 0);
 
 	if (pMaterialList_[i].pTexture)
@@ -265,7 +263,9 @@ void Fbx::PassDataToCB(Transform transform,int i)
 		ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pTexture->GetSRV();
 		Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
 	}
-	
+	ID3D11ShaderResourceView* pSRVtoon =pToonTex_->GetSRV();
+	Direct3D::pContext_->PSSetShaderResources(1, 1, &pSRVtoon);
+
 }
 
 void Fbx::SetBufferToPipeline(int i)

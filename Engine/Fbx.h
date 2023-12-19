@@ -51,6 +51,7 @@ private:
 	MATERIAL* pMaterialList_;//マテリアルのポインタ。後で配列になる可能性
 	int* indexCount_;
 	XMFLOAT3 light_;//ライト位置
+	Texture* pToonTex_;
 public:
 
 	Fbx();

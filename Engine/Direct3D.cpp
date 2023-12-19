@@ -18,8 +18,8 @@ namespace Direct3D
 	};
 	SHADER_BUNDLE shaderBundle[SHADER_MAX];
 
-	ID3D11Texture2D* pDepthStencil_;			//深度ステンシル
-	ID3D11DepthStencilView* pDepthStencilView_;		//深度ステンシルビュー
+	ID3D11Texture2D* pDepthStencil_=nullptr;			//深度ステンシル
+	ID3D11DepthStencilView* pDepthStencilView_=nullptr;		//深度ステンシルビュー
 }
 HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
 {
@@ -146,7 +146,11 @@ HRESULT Direct3D::InitShader()
 	{
 		return hr;
 	}
-
+	hr = InitShader3DToon();
+	if (FAILED(hr))
+	{
+		return hr;
+	}
 	return S_OK;
 }
 
@@ -316,6 +320,65 @@ HRESULT Direct3D::InitShader3DEffected()
 	rdc.FillMode = D3D11_FILL_SOLID;
 	rdc.FrontCounterClockwise = FALSE;
 	hr = pDevice_->CreateRasterizerState(&rdc, &(shaderBundle[SHADER_3DE].pRasterizerState_));
+	if (FAILED(hr))
+	{
+		MessageBox(nullptr, "ラスタライザの作成に失敗しました", "エラー", MB_OK);
+		return hr;
+	}
+
+	return S_OK;
+}
+
+HRESULT Direct3D::InitShader3DToon()
+{
+	// 頂点シェーダの作成（コンパイル）		
+	ID3DBlob* pCompileVS = nullptr;
+	D3DCompileFromFile(L"Toon3D.hlsl", nullptr, nullptr, "VS", "vs_5_0", NULL, 0, &pCompileVS, NULL);
+	assert(pCompileVS != nullptr);
+
+	HRESULT	hr = pDevice_->CreateVertexShader(pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), NULL, &(shaderBundle[SHADER_3DToon].pVertexShader_));
+	if (FAILED(hr))
+	{
+		MessageBox(nullptr, "頂点シェーダーの作成に失敗しました", "エラー", MB_OK);
+		return hr;
+	}
+
+	//頂点インプットレイアウト
+	D3D11_INPUT_ELEMENT_DESC layout[] = {
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },	//位置
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, sizeof(XMVECTOR) , D3D11_INPUT_PER_VERTEX_DATA, 0 },//UV座標
+		{ "NORMAL",	0, DXGI_FORMAT_R32G32B32_FLOAT, 0, sizeof(XMVECTOR) * 2 ,	D3D11_INPUT_PER_VERTEX_DATA, 0 },//法線
+	};
+	hr = pDevice_->CreateInputLayout(layout, 3, pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), &(shaderBundle[SHADER_3DToon].pVertexLayout_));
+	if (FAILED(hr))
+	{
+		MessageBox(nullptr, "頂点インプットレイアウトの作成に失敗しました", "エラー", MB_OK);
+		SAFE_RELEASE(pCompileVS);
+		return hr;
+	}
+
+	SAFE_RELEASE(pCompileVS);
+
+	//ピクセルシェーダの作成（コンパイル）
+	ID3DBlob* pCompilePS = nullptr;
+	hr = D3DCompileFromFile(L"Toon3D.hlsl", nullptr, nullptr, "PS", "ps_5_0", NULL, 0, &pCompilePS, NULL);
+	assert(pCompilePS != nullptr);
+
+	hr = pDevice_->CreatePixelShader(pCompilePS->GetBufferPointer(), pCompilePS->GetBufferSize(), NULL, &(shaderBundle[SHADER_3DToon].pPixelShader_));
+	if (FAILED(hr))
+	{
+		MessageBox(nullptr, "ピクセルシェーダの作成に失敗しました", "エラー", MB_OK);
+		SAFE_RELEASE(pCompilePS);
+		return hr;
+	}
+	SAFE_RELEASE(pCompilePS);
+
+	//ラスタライザ作成
+	D3D11_RASTERIZER_DESC rdc = {};
+	rdc.CullMode = D3D11_CULL_BACK;
+	rdc.FillMode = D3D11_FILL_SOLID;
+	rdc.FrontCounterClockwise = FALSE;
+	hr = pDevice_->CreateRasterizerState(&rdc, &(shaderBundle[SHADER_3DToon].pRasterizerState_));
 	if (FAILED(hr))
 	{
 		MessageBox(nullptr, "ラスタライザの作成に失敗しました", "エラー", MB_OK);

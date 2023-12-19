@@ -1,24 +1,24 @@
 //───────────────────────────────────────
 // テクスチャ＆サンプラーデータのグローバル変数定義
 //───────────────────────────────────────
-Texture2D	g_texture : register(t0);	//テクスチャー
-SamplerState	g_sampler : register(s0);	//サンプラー
+Texture2D g_texture : register(t0); //テクスチャー
+SamplerState g_sampler : register(s0); //サンプラー
 
-
+Texture2D g_toon_texture : register(t1);//toon用テクスチャ
 //───────────────────────────────────────
 // コンスタントバッファ
 // DirectX 側から送信されてくる、ポリゴン頂点以外の諸情報の定義
 //───────────────────────────────────────
 cbuffer global : register(b0)
 {
-	float4x4	matWVP;			// ワールド・ビュー・プロジェクションの合成行列
-	float4x4	matW;			//ワールド行列
-    float4x4    matN;           //法線変換行列
-	float4		diffuseColor;		// ディフューズカラー（マテリアルの色）
-    float4      ambientColor;
-    float4      specularColor;
-    float       shininess;
-    bool        isTexture; // テクスチャ貼ってあるかどうか
+    float4x4 matWVP; // ワールド・ビュー・プロジェクションの合成行列
+    float4x4 matW; //ワールド行列
+    float4x4 matN; //法線変換行列
+    float4 diffuseColor; // ディフューズカラー（マテリアルの色）
+    float4 ambientColor;
+    float4 specularColor;
+    float shininess;
+    bool isTexture; // テクスチャ貼ってあるかどうか
 };
 cbuffer global : register(b1)
 {
@@ -31,13 +31,11 @@ cbuffer global : register(b1)
 //───────────────────────────────────────
 struct VS_OUT
 {
-	float4 pos		: SV_POSITION;	//位置
-	float2 uv		: TEXCOORD;	//UV座標
-	float4  color	: COLOR;	//色（明るさ）
-    float4 campos   : TEXCOORD1;
-    float4 normal   : TEXCOORD2;
-  //  float4 light    : TEXCOORD3;
-    //float4 posW : posWorld;
+    float4 pos : SV_POSITION; //位置
+    float2 uv : TEXCOORD; //UV座標
+    float4 color : COLOR; //色（明るさ）
+    float4 campos : TEXCOORD1;
+    float4 normal : TEXCOORD2;
 };
 
 //───────────────────────────────────────
@@ -46,16 +44,16 @@ struct VS_OUT
 VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 {
 	//ピクセルシェーダーへ渡す情報
-    VS_OUT outData = (VS_OUT)0;
+    VS_OUT outData = (VS_OUT) 0;
 
 	//ローカル座標に、ワールド・ビュー・プロジェクション行列をかけて
 	//スクリーン座標に変換し、ピクセルシェーダーへ
-	outData.pos = mul(pos, matWVP);
-	outData.uv = uv.xy;
+    outData.pos = mul(pos, matWVP);
+    outData.uv = uv.xy;
 
 	//法線を回転
     normal.w = 0;
-	normal =mul(normal,matN);
+    normal = mul(normal, matN);
     normal = normalize(normal);
     outData.normal = normal;
  
@@ -63,11 +61,11 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
     float4 light_ = normalize(light);
     
     
-    outData.color = saturate(dot(normal, light_));//ランバートdiffuse用
+    outData.color = saturate(dot(normal, light_)); //ランバートdiffuse用
     float4 posw = mul(pos, matW); //視線ベクトル
     outData.campos = Cam - posw;
 	//まとめて出力
-	return outData;
+    return outData;
 }
 
 //───────────────────────────────────────
@@ -78,24 +76,22 @@ float4 PS(VS_OUT inData) : SV_Target
     float4 lightsourse = float4(1.0, 1.0, 1.0, 0.0);
     float4 diffuse = { 0, 0, 0, 0 };
     float4 ambient = { 0, 0, 0, 0 };
-    float4 specular = { 0, 0, 0, 0 };
-    
-    float n = shininess;
-    float4 NL = dot(inData.normal, normalize(light));
-    float4 R = normalize(2 * NL * inData.normal - normalize(light));
-    specular = pow(saturate(dot(R, normalize(inData.campos))), n) * specularColor;
+
+  
+    float2 uv = { inData.color.x, 0.5f};
+    float4 toon = g_toon_texture.Sample(g_sampler, uv);
     
     if (isTexture)
     {
-        diffuse = lightsourse * g_texture.Sample(g_sampler, inData.uv) * inData.color;
+        diffuse = lightsourse * g_texture.Sample(g_sampler, inData.uv) * toon;
         ambient = lightsourse * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
     }
     else
     {
-        diffuse = lightsourse * diffuseColor * inData.color;
+        diffuse = lightsourse * diffuseColor * toon;
         ambient = lightsourse * diffuseColor * ambientColor;
     }
-  
-    return (diffuse + ambient + specular);
-
+   
+    //return (diffuse + ambient);
+    return diffuse+ambient;
 }
