@@ -19,6 +19,10 @@
     <Filter Include="shader">
       <UniqueIdentifier>{fa70c375-df6a-43c7-8c47-c1640521ad8f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="assets">
+      <UniqueIdentifier>{9f82b2cc-4042-424d-833c-8568c4c08d29}</UniqueIdentifier>
+      <Extensions>png;fbx;</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Sprite.h">
@@ -154,5 +158,10 @@
     <ClCompile Include="AxisArrow.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\toonSlider.png">
+      <Filter>assets</Filter>
+    </Image>
   </ItemGroup>
 </Project>

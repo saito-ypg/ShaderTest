@@ -93,5 +93,12 @@ float4 PS(VS_OUT inData) : SV_Target
     }
    
     //return (diffuse + ambient);
-    return diffuse+ambient;
+    //return diffuse+ambient;
+
+    //輪郭＝視線ベクトルと面の法線の角度が90度くらい
+    if (abs(dot(normalize(inData.campos), inData.normal))<0.3)
+        return float4(0, 0, 0, 0);
+    else
+        return float4(1, 1, 1, 0);
+
 }

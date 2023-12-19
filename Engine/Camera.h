@@ -25,6 +25,8 @@ namespace Camera
 	void SetTarget(XMVECTOR target);
 	void SetTarget(XMFLOAT3 target);
 
+	void SetProjectionMatrix(float width_,float height);
+
 	//ƒrƒ…[s—ñ‚ğæ“¾
 	XMMATRIX GetViewMatrix();
 

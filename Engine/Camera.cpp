@@ -46,6 +46,11 @@ void Camera::SetTarget(XMFLOAT3 target)
 	SetTarget(XMLoadFloat3(&target));
 }
 
+void Camera::SetProjectionMatrix(float width_, float height)
+{
+	projMatrix_ = XMMatrixPerspectiveFovLH(XM_PIDIV4, (FLOAT)width_ / (FLOAT)height, 0.1f, 100.0f);
+}
+
 //ƒrƒ…[s—ñ‚ğæ“¾
 XMMATRIX Camera::GetViewMatrix()
 {

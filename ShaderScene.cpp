@@ -101,7 +101,7 @@ void ShaderScene::Draw()
 {
 	for (auto i : hModel_)
 	{Model::SetTransform(i, transform_);}
-	//Model::SetTransform(hModel_.at(1),st_);
+	Model::SetTransform(hModel_.at(1),st_);
 	Transform lightT;
 	lightT.position_ = lightpos_;
 	Model::SetTransform(hModel_.at(0), lightT);
