@@ -78,7 +78,11 @@ float4 PS(VS_OUT inData) : SV_Target
     float4 ambient = { 0, 0, 0, 0 };
 
   
-    float2 uv = { inData.color.x, 0.5f};
+    float2 uv =/* { inData.color.x, 0.5f };*/
+    {
+      inData.color.x,
+        abs(dot(normalize(inData.campos), inData.normal))
+    };
     float4 toon = g_toon_texture.Sample(g_sampler, uv);
     
     if (isTexture)
@@ -93,12 +97,12 @@ float4 PS(VS_OUT inData) : SV_Target
     }
    
     //return (diffuse + ambient);
-    //return diffuse+ambient;
+    return toon;
 
     //輪郭＝視線ベクトルと面の法線の角度が90度くらい
-    if (abs(dot(normalize(inData.campos), inData.normal))<0.3)
-        return float4(0, 0, 0, 0);
-    else
-        return float4(1, 1, 1, 0);
-
+    //if (abs(dot(normalize(inData.campos), inData.normal))<0.3)
+    //    return float4(0, 0, 0, 0);
+    //else
+    //    return float4(1, 1, 1, 0);
+    //return toon;
 }
