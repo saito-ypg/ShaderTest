@@ -4,7 +4,7 @@
 Texture2D g_texture : register(t0); //テクスチャー
 SamplerState g_sampler : register(s0); //サンプラー
 
-Texture2D g_toon_texture : register(t1);//toon用テクスチャ
+Texture2D g_toon_texture : register(t1); //toon用テクスチャ
 //───────────────────────────────────────
 // コンスタントバッファ
 // DirectX 側から送信されてくる、ポリゴン頂点以外の諸情報の定義
@@ -48,7 +48,7 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 
 	//ローカル座標に、ワールド・ビュー・プロジェクション行列をかけて
 	//スクリーン座標に変換し、ピクセルシェーダーへ
-
+    pos = pos + normal *0.1 ;
     outData.pos = mul(pos, matWVP);
     outData.uv = uv.xy;
 
@@ -56,15 +56,6 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
     normal.w = 0;
     normal = mul(normal, matN);
     normal = normalize(normal);
-    outData.normal = normal;
- 
-
-    float4 light_ = normalize(light);
-    
-    
-    outData.color = saturate(dot(normal, light_)); //ランバートdiffuse用
-    float4 posw = mul(pos, matW); //視線ベクトル
-    outData.campos = Cam - posw;
 	//まとめて出力
     return outData;
 }
@@ -79,9 +70,9 @@ float4 PS(VS_OUT inData) : SV_Target
     float4 ambient = { 0, 0, 0, 0 };
 
   
-    float2 uv =/* { inData.color.x, 0.5f };*/
+    float2 uv = /* { inData.color.x, 0.5f };*/
     {
-      inData.color.x,
+        inData.color.x,
         abs(dot(normalize(inData.campos), inData.normal))
     };
     float4 toon = g_toon_texture.Sample(g_sampler, uv);
@@ -97,12 +88,7 @@ float4 PS(VS_OUT inData) : SV_Target
         ambient = lightsourse * diffuseColor * ambientColor;
     }
    
-    return (diffuse + ambient);
+    return inData.normal;
 
-    //輪郭＝視線ベクトルと面の法線の角度が90度くらい
-    //if (abs(dot(normalize(inData.campos), inData.normal)) < 0.3)
-    //    return float4(0, 0, 0, 0);
-    //else
-    //    return float4(1, 1, 1, 0);
-    //return toon;
+    
 }

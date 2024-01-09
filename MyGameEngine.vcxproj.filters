@@ -93,6 +93,9 @@
     <FxCompile Include="Toon3D.hlsl">
       <Filter>shader</Filter>
     </FxCompile>
+    <FxCompile Include="ToonOutline.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
