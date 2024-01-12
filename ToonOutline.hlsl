@@ -48,12 +48,12 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 
 	//ローカル座標に、ワールド・ビュー・プロジェクション行列をかけて
 	//スクリーン座標に変換し、ピクセルシェーダーへ
-    pos = pos + normal *0.1 ;
+    normal.w = 0;
+    pos = pos+normal*0.1;
     outData.pos = mul(pos, matWVP);
     outData.uv = uv.xy;
 
 	//法線を回転
-    normal.w = 0;
     normal = mul(normal, matN);
     normal = normalize(normal);
 	//まとめて出力
@@ -65,30 +65,5 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 //───────────────────────────────────────
 float4 PS(VS_OUT inData) : SV_Target
 {
-    float4 lightsourse = float4(1.0, 1.0, 1.0, 0.0);
-    float4 diffuse = { 0, 0, 0, 0 };
-    float4 ambient = { 0, 0, 0, 0 };
-
-  
-    float2 uv = /* { inData.color.x, 0.5f };*/
-    {
-        inData.color.x,
-        abs(dot(normalize(inData.campos), inData.normal))
-    };
-    float4 toon = g_toon_texture.Sample(g_sampler, uv);
-    
-    if (isTexture)
-    {
-        diffuse = lightsourse * g_texture.Sample(g_sampler, inData.uv) * toon;
-        ambient = lightsourse * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
-    }
-    else
-    {
-        diffuse = lightsourse * diffuseColor * toon;
-        ambient = lightsourse * diffuseColor * ambientColor;
-    }
-   
-    return inData.normal;
-
-    
+    return (1, 1, 1, 1);    
 }

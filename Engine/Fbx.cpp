@@ -103,19 +103,20 @@ void Fbx::Draw(Transform& transform)
 		Direct3D::pContext_->DrawIndexed(indexCount_[i], 0, 0);
 	}
 
-	//Direct3D::SetShader(SHADER_3DToon);
-	//transform.Calculation();//トランスフォームを計算
-	////コンスタントバッファに情報を渡す
+	Direct3D::SetShader(SHADER_3DToon);
+	transform.Calculation();//トランスフォームを計算
+	//コンスタントバッファに情報を渡す
 
-	//for (int i = 0; i < materialCount_; i++)
-	//{
-	//	PassDataToCB(transform, i);
+	for (int i = 0; i < materialCount_; i++)
+	{
+		PassDataToCB(transform, i);
 
-	//	SetBufferToPipeline(i);
+		SetBufferToPipeline(i);
 
-	//	//描画
-	//	Direct3D::pContext_->DrawIndexed(indexCount_[i], 0, 0);
-	//}
+		//描画
+		Direct3D::pContext_->DrawIndexed(indexCount_[i], 0, 0);
+	}
+
 }
 
 void Fbx::Release()
