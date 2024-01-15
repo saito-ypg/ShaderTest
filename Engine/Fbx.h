@@ -16,6 +16,7 @@ private:
 	struct MATERIAL
 	{
 		Texture* pTexture;
+		Texture* pNormalMap;
 		XMFLOAT4 diffuse;
 		XMFLOAT4 ambient;
 		XMFLOAT4 specular;//反射強度・色
@@ -33,6 +34,7 @@ private:
 		//XMFLOAT4	lightPosition;
 		float		shininess;//ハイライトの強さ
 		BOOL		isTexture;		// テクスチャ貼ってあるかどうか
+		BOOL		isNormalTex;	//ノーマルマップあるかどうか
 	};
 
 	struct VERTEX

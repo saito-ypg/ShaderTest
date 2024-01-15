@@ -156,6 +156,11 @@ HRESULT Direct3D::InitShader()
 	{
 		return hr;
 	}
+	hr = InitShaderNormalMap();
+	if (FAILED(hr))
+	{
+		return hr;
+	}
 	return S_OK;
 }
 
@@ -451,6 +456,65 @@ HRESULT Direct3D::InitShaderToonOutline()
 	}
 
 	return S_OK;
+}
+
+HRESULT Direct3D::InitShaderNormalMap()
+{
+	// 頂点シェーダの作成（コンパイル）		
+	ID3DBlob* pCompileVS = nullptr;
+	D3DCompileFromFile(L"NormalMapping.hlsl", nullptr, nullptr, "VS", "vs_5_0", NULL, 0, &pCompileVS, NULL);
+	assert(pCompileVS != nullptr);
+
+	HRESULT	hr = pDevice_->CreateVertexShader(pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), NULL, &(shaderBundle[SHADER_NORMALMAP].pVertexShader_));
+	if (FAILED(hr))
+	{
+		MessageBox(nullptr, "頂点シェーダーの作成に失敗しました", "エラー", MB_OK);
+		return hr;
+	}
+
+	//頂点インプットレイアウト
+	D3D11_INPUT_ELEMENT_DESC layout[] = {
+		{ "POSITION",0, DXGI_FORMAT_R32G32B32_FLOAT,0, sizeof(XMVECTOR) * 0 ,D3D11_INPUT_PER_VERTEX_DATA, 0 },	//位置
+		{ "TEXCOORD",0, DXGI_FORMAT_R32G32_FLOAT,	0, sizeof(XMVECTOR) * 1 ,D3D11_INPUT_PER_VERTEX_DATA, 0 },//UV座標
+		{ "NORMAL"	,0, DXGI_FORMAT_R32G32B32_FLOAT,0, sizeof(XMVECTOR) * 2 ,D3D11_INPUT_PER_VERTEX_DATA, 0 },//法線
+		{ "TANGENT"	,0, DXGI_FORMAT_R32G32B32_FLOAT,0, sizeof(XMVECTOR) * 3 ,D3D11_INPUT_PER_VERTEX_DATA, 0 },//法線
+	};
+	hr = pDevice_->CreateInputLayout(layout, 3, pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), &(shaderBundle[SHADER_NORMALMAP].pVertexLayout_));
+	if (FAILED(hr))
+	{
+		MessageBox(nullptr, "頂点インプットレイアウトの作成に失敗しました", "エラー", MB_OK);
+		SAFE_RELEASE(pCompileVS);
+		return hr;
+	}
+
+	SAFE_RELEASE(pCompileVS);
+
+	//ピクセルシェーダの作成（コンパイル）
+	ID3DBlob* pCompilePS = nullptr;
+	hr = D3DCompileFromFile(L"NormalMapping.hlsl", nullptr, nullptr, "PS", "ps_5_0", NULL, 0, &pCompilePS, NULL);
+	assert(pCompilePS != nullptr);
+
+	hr = pDevice_->CreatePixelShader(pCompilePS->GetBufferPointer(), pCompilePS->GetBufferSize(), NULL, &(shaderBundle[SHADER_NORMALMAP].pPixelShader_));
+	if (FAILED(hr))
+	{
+		MessageBox(nullptr, "ピクセルシェーダの作成に失敗しました", "エラー", MB_OK);
+		SAFE_RELEASE(pCompilePS);
+		return hr;
+	}
+	SAFE_RELEASE(pCompilePS);
+
+	//ラスタライザ作成
+	D3D11_RASTERIZER_DESC rdc = {};
+	rdc.CullMode = D3D11_CULL_FRONT;
+	rdc.FillMode = D3D11_FILL_SOLID;
+	rdc.FrontCounterClockwise = FALSE;
+	hr = pDevice_->CreateRasterizerState(&rdc, &(shaderBundle[SHADER_NORMALMAP].pRasterizerState_));
+	if (FAILED(hr))
+	{
+		MessageBox(nullptr, "ラスタライザの作成に失敗しました", "エラー", MB_OK);
+		return hr;
+	}
+
 }
 
 void Direct3D::SetShader(SHADER_TYPE type)

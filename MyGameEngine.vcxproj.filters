@@ -96,6 +96,9 @@
     <FxCompile Include="ToonOutline.hlsl">
       <Filter>shader</Filter>
     </FxCompile>
+    <FxCompile Include="NormalMapping.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -103,7 +103,7 @@ void Fbx::Draw(Transform& transform)
 			Direct3D::pContext_->DrawIndexed(indexCount_[i], 0, 0);
 		}
 
-		//Direct3D::SetShader(SHADER_3DToon);
+		Direct3D::SetShader(SHADER_3DToon);
 	}
 
 }
@@ -318,7 +318,6 @@ HRESULT Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 
 		//テクスチャの数数
 		int fileTextureCount = lProperty.GetSrcObjectCount<FbxFileTexture>();
-		
 		pMaterialList_[i].pTexture = nullptr;
 		//テクスチャあり
 		if (fileTextureCount>0)
@@ -336,6 +335,29 @@ HRESULT Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 			pMaterialList_[i].pTexture = new Texture;
 			HRESULT hr=pMaterialList_[i].pTexture->Load(name);
 			if(FAILED(hr))
+			{
+				return hr;
+			}
+
+		}
+		//ここから法線マップ読み取り
+		FbxProperty normaltex = pPhong->FindProperty(FbxSurfaceMaterial::sNormalMap);
+		int normalcount = normaltex.GetSrcObjectCount<FbxFileTexture>();
+		if (normalcount > 0)
+		{
+			FbxFileTexture* textureInfo =normaltex.GetSrcObject<FbxFileTexture>(0);
+			string textureFilePath = textureInfo->GetRelativeFileName();
+
+			//ファイル名+拡張だけにする
+			char name[_MAX_FNAME];	//ファイル名
+			char ext[_MAX_EXT];	//拡張子
+			_splitpath_s(textureFilePath.c_str(), nullptr, 0, nullptr, 0, name, _MAX_FNAME, ext, _MAX_EXT);
+			wsprintf(name, "%s%s", name, ext);
+
+			//ファイルからテクスチャ作成
+			pMaterialList_[i].pTexture = new Texture;
+			HRESULT hr = pMaterialList_[i].pTexture->Load(name);
+			if (FAILED(hr))
 			{
 				return hr;
 			}
