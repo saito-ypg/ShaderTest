@@ -2,6 +2,8 @@
 #include"Direct3D.h"
 #include"Camera.h"
 #include"Texture.h"
+
+#define TOON false
 Fbx::Fbx():pVertexBuffer_(nullptr),pIndexBuffer_(nullptr),pConstantBuffer_(nullptr),pMaterialList_(nullptr), vertexCount_(0), polygonCount_(0), materialCount_(0),indexCount_(nullptr)
 {
 }
@@ -81,31 +83,42 @@ HRESULT Fbx::Load(std::string fileName)
 	//マネージャ解放
 	pFbxManager->Destroy();
 	
+#if TOON
 	pToonTex_ = new Texture;
 	pToonTex_->Load("Assets\\toonSlider.png");
-	
+#endif
 	return S_OK;
 }
 
 void Fbx::Draw(Transform& transform)
 {
-	Direct3D::SetShader(SHADER_ToonOutline);
-	transform.Calculation();//トランスフォームを計算
-	//コンスタントバッファに情報を渡す
-	for (int i = 0; i < 2; i++) {
-		for (int i = 0; i < materialCount_; i++)
-		{
-			PassDataToCB(transform, i);
+#if TOON
+	//Direct3D::SetShader(SHADER_ToonOutline);
+	//transform.Calculation();//トランスフォームを計算
+	////コンスタントバッファに情報を渡す
+	//for (int i = 0; i < 2; i++) {
+	//	for (int i = 0; i < materialCount_; i++)
+	//	{
+	//		PassDataToCB(transform, i);
 
-			SetBufferToPipeline(i);
+	//		SetBufferToPipeline(i);
 
-			//描画
-			Direct3D::pContext_->DrawIndexed(indexCount_[i], 0, 0);
-		}
+	//		//描画
+	//		Direct3D::pContext_->DrawIndexed(indexCount_[i], 0, 0);
+	//	}
 
-		Direct3D::SetShader(SHADER_3DToon);
+	//	Direct3D::SetShader(SHADER_3DToon);
+	//}//toonの残骸
+#else//toon
+	Direct3D::SetShader(SHADER_NORMALMAP);
+	transform.Calculation();
+	for (int i = 0; i < materialCount_; i++)
+	{
+		PassDataToCB(transform, i);
+		SetBufferToPipeline(i);
+		Direct3D::pContext_->DrawIndexed(indexCount_[i], 0, 0);
 	}
-
+#endif//toon
 }
 
 void Fbx::Release()
@@ -164,13 +177,24 @@ HRESULT Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 	}
 	for (int i = 0; i < polygonCount_; i++)//タンジェントは面の数だけある
 	{
+		auto a=mesh->GetElementTangentCount();
 		int sIndex = mesh->GetPolygonVertexIndex(i);//i番目のポリゴンの最初の頂点を返す関数
 		FbxGeometryElementTangent* Etangent = mesh->GetElementTangent(0);
-		FbxVector4 tangent = Etangent->GetDirectArray().GetAt(sIndex).mData;
-		for (int j = 0; j < 3; j++)
-		{
-			int index = mesh->GetPolygonVertices()[sIndex + j];
-			vertices[index].tangent = {(float)tangent[0],(float)tangent[1], (float)tangent[2], (float)tangent[3]};
+		if (Etangent) {
+			FbxVector4 tangent = Etangent->GetDirectArray().GetAt(sIndex).mData;
+			for (int j = 0; j < 3; j++)
+			{
+				int index = mesh->GetPolygonVertices()[sIndex + j];
+
+				vertices[index].tangent = { (float)tangent[0],(float)tangent[1], (float)tangent[2], (float)tangent[3] };
+			}
+		}
+		else {
+			for (int j = 0; j < 3; j++)
+			{
+				int index = mesh->GetPolygonVertices()[sIndex + j];
+				vertices[index].tangent = { 0.0f,0.0f,0.0f,0.0f };
+			}
 		}
 	}
 	// 頂点バッファ作成
@@ -283,9 +307,10 @@ void Fbx::PassDataToCB(Transform transform,int i)
 		ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pNormalMap->GetSRV();
 		Direct3D::pContext_->PSSetShaderResources(2, 1, &pSRV);
 	}
+#if toon
 	ID3D11ShaderResourceView* pSRVtoon =pToonTex_->GetSRV();
 	Direct3D::pContext_->PSSetShaderResources(1, 1, &pSRVtoon);
-
+#endif
 }
 
 void Fbx::SetBufferToPipeline(int i)
