@@ -4,11 +4,14 @@
 #include <fbxsdk.h>
 #include <string>
 #include "Transform.h"
-class Texture;
-#pragma comment(lib, "LibFbxSDK-Md.lib")
-#pragma comment(lib, "LibXml2-Md.lib")
-#pragma comment(lib, "zlib-Md.lib")
+#pragma warning(push)
+	#pragma warning( disable : 4099 )
+	#pragma comment(lib, "LibFbxSDK-Md.lib")
+	#pragma comment(lib, "LibXml2-Md.lib")
+	#pragma comment(lib, "zlib-Md.lib")
+#pragma warning(pop)
 
+class Texture;
 class Fbx
 {
 private:
@@ -34,7 +37,6 @@ private:
 		//XMFLOAT4	lightPosition;
 		float		shininess;//ハイライトの強さ
 		BOOL		isTexture;		// テクスチャ貼ってあるかどうか
-		BOOL		isNormalTex;	//ノーマルマップあるかどうか
 	};
 
 	struct VERTEX
@@ -42,6 +44,7 @@ private:
 		XMVECTOR position;
 		XMVECTOR uv;
 		XMVECTOR normal;
+		XMVECTOR tangent;//接線
 	};
 	int vertexCount_;	//頂点数
 	int polygonCount_;	//ポリゴン数

@@ -477,9 +477,9 @@ HRESULT Direct3D::InitShaderNormalMap()
 		{ "POSITION",0, DXGI_FORMAT_R32G32B32_FLOAT,0, sizeof(XMVECTOR) * 0 ,D3D11_INPUT_PER_VERTEX_DATA, 0 },	//位置
 		{ "TEXCOORD",0, DXGI_FORMAT_R32G32_FLOAT,	0, sizeof(XMVECTOR) * 1 ,D3D11_INPUT_PER_VERTEX_DATA, 0 },//UV座標
 		{ "NORMAL"	,0, DXGI_FORMAT_R32G32B32_FLOAT,0, sizeof(XMVECTOR) * 2 ,D3D11_INPUT_PER_VERTEX_DATA, 0 },//法線
-		{ "TANGENT"	,0, DXGI_FORMAT_R32G32B32_FLOAT,0, sizeof(XMVECTOR) * 3 ,D3D11_INPUT_PER_VERTEX_DATA, 0 },//法線
+		{ "TANGENT"	,0, DXGI_FORMAT_R32G32B32_FLOAT,0, sizeof(XMVECTOR) * 3 ,D3D11_INPUT_PER_VERTEX_DATA, 0 },//接線
 	};
-	hr = pDevice_->CreateInputLayout(layout, 3, pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), &(shaderBundle[SHADER_NORMALMAP].pVertexLayout_));
+	hr = pDevice_->CreateInputLayout(layout,sizeof(layout)/sizeof(layout[0]), pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), &(shaderBundle[SHADER_NORMALMAP].pVertexLayout_));
 	if (FAILED(hr))
 	{
 		MessageBox(nullptr, "頂点インプットレイアウトの作成に失敗しました", "エラー", MB_OK);

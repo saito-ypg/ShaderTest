@@ -162,6 +162,17 @@ HRESULT Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 			vertices[index].normal = XMVectorSet((float)Normal[0], (float)Normal[1], (float)Normal[2], 0.0f);
 		}
 	}
+	for (int i = 0; i < polygonCount_; i++)//タンジェントは面の数だけある
+	{
+		int sIndex = mesh->GetPolygonVertexIndex(i);//i番目のポリゴンの最初の頂点を返す関数
+		FbxGeometryElementTangent* Etangent = mesh->GetElementTangent(0);
+		FbxVector4 tangent = Etangent->GetDirectArray().GetAt(sIndex).mData;
+		for (int j = 0; j < 3; j++)
+		{
+			int index = mesh->GetPolygonVertices()[sIndex + j];
+			vertices[index].tangent = {(float)tangent[0],(float)tangent[1], (float)tangent[2], (float)tangent[3]};
+		}
+	}
 	// 頂点バッファ作成
 	D3D11_BUFFER_DESC bd_vertex;
 	bd_vertex.ByteWidth = vertexCount_ * sizeof(VERTEX);
@@ -267,6 +278,11 @@ void Fbx::PassDataToCB(Transform transform,int i)
 		ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pTexture->GetSRV();
 		Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
 	}
+	if (pMaterialList_[i].pNormalMap)
+	{
+		ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pNormalMap->GetSRV();
+		Direct3D::pContext_->PSSetShaderResources(2, 1, &pSRV);
+	}
 	ID3D11ShaderResourceView* pSRVtoon =pToonTex_->GetSRV();
 	Direct3D::pContext_->PSSetShaderResources(1, 1, &pSRVtoon);
 
@@ -302,7 +318,7 @@ HRESULT Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 		FbxDouble3  diffuse = pPhong->Diffuse;
 		FbxDouble3  ambient = pPhong->Ambient;
 		pMaterialList_[i].diffuse = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f);
-		pMaterialList_[i].ambient=XMFLOAT4((float)ambient[0], (float)ambient[1], (float)ambient[2], 1.0f);
+		pMaterialList_[i].ambient = XMFLOAT4((float)ambient[0], (float)ambient[1], (float)ambient[2], 1.0f);
 		pMaterialList_[i].specular = XMFLOAT4{ 0,0,0,0 };
 		pMaterialList_[i].shininess = 1.0f;
 		if (pPhong->GetClassId().Is(FbxSurfacePhong::ClassId))
@@ -314,54 +330,65 @@ HRESULT Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 
 
 		//テクスチャ情報
-		FbxProperty  lProperty = pPhong->FindProperty(FbxSurfaceMaterial::sDiffuse);
-
-		//テクスチャの数数
-		int fileTextureCount = lProperty.GetSrcObjectCount<FbxFileTexture>();
-		pMaterialList_[i].pTexture = nullptr;
-		//テクスチャあり
-		if (fileTextureCount>0)
 		{
-			FbxFileTexture* textureInfo = lProperty.GetSrcObject<FbxFileTexture>(0);
-			string textureFilePath = textureInfo->GetRelativeFileName();
+			FbxProperty  lProperty = pPhong->FindProperty(FbxSurfaceMaterial::sDiffuse);
 
-			//ファイル名+拡張だけにする
-			char name[_MAX_FNAME];	//ファイル名
-			char ext[_MAX_EXT];	//拡張子
-			_splitpath_s(textureFilePath.c_str(), nullptr, 0, nullptr, 0, name, _MAX_FNAME, ext, _MAX_EXT);
-			wsprintf(name, "%s%s", name, ext);
+			//テクスチャの数数
+			int fileTextureCount = lProperty.GetSrcObjectCount<FbxFileTexture>();
 
-			//ファイルからテクスチャ作成
-			pMaterialList_[i].pTexture = new Texture;
-			HRESULT hr=pMaterialList_[i].pTexture->Load(name);
-			if(FAILED(hr))
+			//テクスチャあり
+			if (fileTextureCount > 0)
 			{
-				return hr;
-			}
+				FbxFileTexture* textureInfo = lProperty.GetSrcObject<FbxFileTexture>(0);
+				string textureFilePath = textureInfo->GetRelativeFileName();
 
+				//ファイル名+拡張だけにする
+				char name[_MAX_FNAME];	//ファイル名
+				char ext[_MAX_EXT];	//拡張子
+				_splitpath_s(textureFilePath.c_str(), nullptr, 0, nullptr, 0, name, _MAX_FNAME, ext, _MAX_EXT);
+				wsprintf(name, "%s%s", name, ext);
+
+				//ファイルからテクスチャ作成
+				pMaterialList_[i].pTexture = new Texture;
+				HRESULT hr = pMaterialList_[i].pTexture->Load(name);
+				if (FAILED(hr))
+				{
+					return hr;
+				}
+
+			}
+			else
+			{
+				pMaterialList_[i].pTexture = nullptr;
+			}
 		}
-		//ここから法線マップ読み取り
-		FbxProperty normaltex = pPhong->FindProperty(FbxSurfaceMaterial::sNormalMap);
-		int normalcount = normaltex.GetSrcObjectCount<FbxFileTexture>();
-		if (normalcount > 0)
-		{
-			FbxFileTexture* textureInfo =normaltex.GetSrcObject<FbxFileTexture>(0);
-			string textureFilePath = textureInfo->GetRelativeFileName();
-
-			//ファイル名+拡張だけにする
-			char name[_MAX_FNAME];	//ファイル名
-			char ext[_MAX_EXT];	//拡張子
-			_splitpath_s(textureFilePath.c_str(), nullptr, 0, nullptr, 0, name, _MAX_FNAME, ext, _MAX_EXT);
-			wsprintf(name, "%s%s", name, ext);
-
-			//ファイルからテクスチャ作成
-			pMaterialList_[i].pTexture = new Texture;
-			HRESULT hr = pMaterialList_[i].pTexture->Load(name);
-			if (FAILED(hr))
+		{//ここから法線マップ読み取り。ほぼ通常texと同じ
+			FbxProperty lProperty= pPhong->FindProperty(FbxSurfaceMaterial::sNormalMap);
+			int fileTextureCount = lProperty.GetSrcObjectCount<FbxFileTexture>();
+			if (fileTextureCount > 0)
 			{
-				return hr;
-			}
+				FbxFileTexture* textureInfo = lProperty.GetSrcObject<FbxFileTexture>(0);
+				string textureFilePath = textureInfo->GetRelativeFileName();
 
+				//ファイル名+拡張だけにする
+				char name[_MAX_FNAME];	//ファイル名
+				char ext[_MAX_EXT];	//拡張子
+				_splitpath_s(textureFilePath.c_str(), nullptr, 0, nullptr, 0, name, _MAX_FNAME, ext, _MAX_EXT);
+				wsprintf(name, "%s%s", name, ext);
+
+				//ファイルからテクスチャ作成
+				pMaterialList_[i].pNormalMap = new Texture;
+				HRESULT hr = pMaterialList_[i].pNormalMap->Load(name);
+				if (FAILED(hr))
+				{
+					return hr;
+				}
+
+			}
+			else
+			{
+				pMaterialList_[i].pNormalMap = nullptr;
+			}
 		}
 	}
 	return S_OK;
