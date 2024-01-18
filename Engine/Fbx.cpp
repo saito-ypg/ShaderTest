@@ -179,23 +179,17 @@ HRESULT Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 	{
 		auto a=mesh->GetElementTangentCount();
 		int sIndex = mesh->GetPolygonVertexIndex(i);//i番目のポリゴンの最初の頂点を返す関数
+		FbxVector4 tangent = { 0,0,0,0 };
 		FbxGeometryElementTangent* Etangent = mesh->GetElementTangent(0);
 		if (Etangent) {
-			FbxVector4 tangent = Etangent->GetDirectArray().GetAt(sIndex).mData;
-			for (int j = 0; j < 3; j++)
-			{
-				int index = mesh->GetPolygonVertices()[sIndex + j];
-
-				vertices[index].tangent = { (float)tangent[0],(float)tangent[1], (float)tangent[2], (float)tangent[3] };
-			}
+			tangent=Etangent->GetDirectArray().GetAt(sIndex).mData;//接線データあるなら入れとく
 		}
-		else {
-			for (int j = 0; j < 3; j++)
-			{
-				int index = mesh->GetPolygonVertices()[sIndex + j];
-				vertices[index].tangent = { 0.0f,0.0f,0.0f,0.0f };
-			}
+		for (int j = 0; j < 3; j++)
+		{
+			int index = mesh->GetPolygonVertices()[sIndex + j];
+			vertices[index].tangent = { (float)tangent[0],(float)tangent[1], (float)tangent[2], 0 };
 		}
+		
 	}
 	// 頂点バッファ作成
 	D3D11_BUFFER_DESC bd_vertex;
@@ -285,11 +279,12 @@ void Fbx::PassDataToCB(Transform transform,int i)
 	cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
 	cb.matW = XMMatrixTranspose(transform.GetWorldMatrix());
 	cb.matNormal = XMMatrixTranspose(transform.GetNormalMatrix());
-	cb.isTexture = pMaterialList_[i].pTexture != nullptr;
 	cb.diffuseColor = pMaterialList_[i].diffuse;
 	cb.ambientColor = pMaterialList_[i].ambient;
 	cb.specular = pMaterialList_[i].specular;
 	cb.shininess =  pMaterialList_[i].shininess;
+	cb.hasTexture = pMaterialList_[i].pTexture != nullptr;
+	cb.hasNormalMap = pMaterialList_[i].pNormalMap != nullptr;
 
 
 
@@ -305,7 +300,7 @@ void Fbx::PassDataToCB(Transform transform,int i)
 	if (pMaterialList_[i].pNormalMap)
 	{
 		ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pNormalMap->GetSRV();
-		Direct3D::pContext_->PSSetShaderResources(2, 1, &pSRV);
+		Direct3D::pContext_->PSSetShaderResources(1, 1, &pSRV);
 	}
 #if toon
 	ID3D11ShaderResourceView* pSRVtoon =pToonTex_->GetSRV();
@@ -388,7 +383,7 @@ HRESULT Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 			}
 		}
 		{//ここから法線マップ読み取り。ほぼ通常texと同じ
-			FbxProperty lProperty= pPhong->FindProperty(FbxSurfaceMaterial::sNormalMap);
+			FbxProperty lProperty= pPhong->FindProperty(FbxSurfaceMaterial::sBump);
 			int fileTextureCount = lProperty.GetSrcObjectCount<FbxFileTexture>();
 			if (fileTextureCount > 0)
 			{

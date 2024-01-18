@@ -33,10 +33,9 @@ private:
 		XMFLOAT4	diffuseColor;	// マテリアルの色(FBXからとってくる）
 		XMFLOAT4	ambientColor;	//環境光
 		XMFLOAT4	specular;		//反射光
-		//XMFLOAT4	Cam;//カメラの視点,normalize
-		//XMFLOAT4	lightPosition;
 		float		shininess;//ハイライトの強さ
-		BOOL		isTexture;		// テクスチャ貼ってあるかどうか
+		BOOL		hasTexture;		// テクスチャ貼ってあるかどうか
+		BOOL		hasNormalMap;
 	};
 
 	struct VERTEX
