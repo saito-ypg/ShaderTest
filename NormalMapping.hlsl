@@ -54,13 +54,12 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL, f
     outData.pos = mul(pos, matWVP);
     outData.uv = uv.xy;
    
-    float4 binormal;
-    binormal.xyz = cross(normal.xyz, tangent.xyz);
-    binormal.w = 0;
+    float4 binormal = float4(cross(normal.xyz, tangent.xyz), 0);
 	//法線を回転
     normal.w = 0;
     normal = mul(normal, matN);
     normal = normalize(normal);
+    normal.w = 0;
     outData.normal = normal;
     
     //接線ベクトル変換
@@ -72,17 +71,19 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL, f
     binormal = normalize(binormal);
     
     float4 posw = mul(pos, matW); //視線ベクトル
-    outData.campos = Cam - posw;
+    outData.campos = normalize(Cam - posw);
     outData.Neyev.x = dot(outData.campos, tangent);
     outData.Neyev.y = dot(outData.campos, binormal);
     outData.Neyev.z = dot(outData.campos, normal);
     outData.Neyev.w = 0;
     
     float4 light_ = normalize(light);
-    outData.color = mul(light, normal);
-    outData.light.x = dot(light, tangent);
-    outData.light.y = dot(light, binormal);
-    outData.light.z = dot(light, normal);
+    light_.w = 0;
+    outData.color = mul(light_, normal);
+    outData.color.w = 0;
+    outData.light.x = dot(light_, tangent);
+    outData.light.y = dot(light_, binormal);
+    outData.light.z = dot(light_, normal);
     outData.light.w = 0;
 	//まとめて出力
     return outData;
@@ -101,8 +102,6 @@ float4 PS(VS_OUT inData) : SV_Target
     if (hasNormalMap)
     {
         inData.light = normalize(inData.light);
-        float4 diffuse;
-        float4 ambient;
         float4 specular;
 
         float4 tmpNormal = normalMap.Sample(g_sampler, inData.uv) * 2 - 1; //色からベクトルに
@@ -122,7 +121,7 @@ float4 PS(VS_OUT inData) : SV_Target
             diffuse = lightsourse * diffuseColor * S;
             ambient = lightsourse * diffuseColor * ambientColor;
         }
-        return (diffuse + ambient /*+ specular*/);
+        return (diffuse + ambient + specular);
     }
     else
     {
