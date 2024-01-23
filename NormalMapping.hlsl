@@ -98,7 +98,8 @@ float4 PS(VS_OUT inData) : SV_Target
     float4 diffuse = { 0, 0, 0, 0 };
     float4 ambient = { 0, 0, 0, 0 };
     float4 specular = { 0, 0, 0, 0 };
-
+    float alpha=1.0f;
+    float4 result;
     if (hasNormalMap)
     {
         inData.light = normalize(inData.light);
@@ -115,13 +116,14 @@ float4 PS(VS_OUT inData) : SV_Target
         {
             diffuse = lightsourse * g_texture.Sample(g_sampler, inData.uv) * S;
             ambient = lightsourse * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
+           // alpha = g_texture.Sample(g_sampler, inData.uv).a;
         }
         else
         {
             diffuse = lightsourse * diffuseColor * S;
             ambient = lightsourse * diffuseColor * ambientColor;
         }
-        return (diffuse + ambient + specular);
+        result=diffuse + ambient + specular;
     }
     else
     {
@@ -132,14 +134,15 @@ float4 PS(VS_OUT inData) : SV_Target
         {
             diffuse = lightsourse * g_texture.Sample(g_sampler, inData.uv) * inData.color;
             ambient = lightsourse * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
+            alpha = g_texture.Sample(g_sampler, inData.uv).a;
         }
         else
         {
             diffuse = lightsourse * diffuseColor * inData.color;
             ambient = lightsourse * diffuseColor * ambientColor;
         }
-        return (diffuse + ambient + specular);
+        result =diffuse + ambient + specular;
     }
-    
-
+    result.a = alpha;
+    return result;
 }
