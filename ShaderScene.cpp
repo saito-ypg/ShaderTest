@@ -37,6 +37,7 @@ void ShaderScene::Initialize()
 	//hModel_.push_back(Model::Load("Assets\\sphere.fbx"));
 	hModel_.push_back(Model::Load("Assets\\lightSphere.fbx"));
 	hModel_.push_back(Model::Load("Assets\\torus.fbx"));
+	hModel_.push_back(Model::Load("Assets\\TransparentDice.fbx"));
 	for (auto i : hModel_)
 	{
 		assert(i >= 0);
@@ -100,11 +101,17 @@ void ShaderScene::Update()
 void ShaderScene::Draw()
 {
 	for (auto i : hModel_)
-	{Model::SetTransform(i, transform_);}
+	{
+		Model::SetTransform(i, transform_);
+	}
+
 	Model::SetTransform(hModel_.at(1),st_);
 	Transform lightT;
 	lightT.position_ = lightpos_;
 	Model::SetTransform(hModel_.at(0), lightT);
+	Transform diceT;
+	diceT.position_ = { 3,5,-2 };
+	Model::SetTransform(hModel_.at(2), diceT);
 	for (auto i : hModel_)
 	{
 		Model::Draw(i);
