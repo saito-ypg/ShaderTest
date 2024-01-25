@@ -59,7 +59,7 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL, f
     normal.w = 0;
     normal = mul(normal, matN);
     normal = normalize(normal);
-    normal.w = 0;
+    //normal.w = 0;
     outData.normal = normal;
     
     //ê⁄ê¸ÉxÉNÉgÉãïœä∑
@@ -79,7 +79,7 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL, f
     
     float4 light_ = normalize(light);
     light_.w = 0;
-    outData.color = mul(light_, normal);
+    outData.color.xyz = cross(light_.xyz, normal.xyz);
     outData.color.w = 0;
     outData.light.x = dot(light_, tangent);
     outData.light.y = dot(light_, binormal);
@@ -141,7 +141,7 @@ float4 PS(VS_OUT inData) : SV_Target
             diffuse = lightsourse * diffuseColor * inData.color;
             ambient = lightsourse * diffuseColor * ambientColor;
         }
-        result =diffuse + ambient + specular;
+        result = diffuse + ambient + specular;
     }
     result.a = alpha;
     return result;

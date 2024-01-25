@@ -29,7 +29,17 @@ HRESULT Fbx::Load(std::string fileName)
 
 	//メッシュ情報を取得
 	FbxNode* rootNode = pFbxScene->GetRootNode();
+	if (!rootNode)
+	{
+		MessageBox(nullptr, "FBX情報の読み取りに失敗しました", "FBXエラー", MB_OK);
+		return E_FAIL;
+	}
 	FbxNode* pNode = rootNode->GetChild(0);
+	if (!pNode)
+	{
+		MessageBox(nullptr, "FBXノードの読み取りに失敗しました", "FBXエラー", MB_OK);
+		return E_FAIL;
+	}
 	FbxMesh* mesh = pNode->GetMesh();
 
 	//各情報の個数を取得
