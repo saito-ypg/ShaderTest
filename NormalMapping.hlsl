@@ -79,7 +79,7 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL, f
     
     float4 light_ = normalize(light);
     light_.w = 0;
-    outData.color.xyz = cross(light_.xyz, normal.xyz);
+    outData.color = mul(light_, normal);
     outData.color.w = 0;
     outData.light.x = dot(light_, tangent);
     outData.light.y = dot(light_, binormal);
