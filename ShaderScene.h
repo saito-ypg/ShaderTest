@@ -12,6 +12,7 @@ class ShaderScene:public GameObject
 {
     std::vector<int> hModel_;
     Transform st_;
+    Transform diceT;
     XMFLOAT3 lightpos_;
     void InitConstantBuffer();
     void PassDatatoStageCB();

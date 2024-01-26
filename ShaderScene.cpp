@@ -45,6 +45,7 @@ void ShaderScene::Initialize()
 	Camera::SetPosition(XMFLOAT3(3, 10,-10));
 	Instantiate<AxisArrow>(this);
 	Model::SetLight(lightpos_);
+	diceT.position_ = { 3,5,-2 };
 
 
 	InitConstantBuffer();
@@ -93,7 +94,21 @@ void ShaderScene::Update()
 		Model::SetLight(lightpos_);
 	}
 	st_.rotate_.y++;
-
+	if (Input::IsKey(DIK_K))
+	{
+		diceT.position_.x += move;
+	}if (Input::IsKey(DIK_H))
+	{
+		diceT.position_.x -= move;
+	}
+	if (Input::IsKey(DIK_U))
+	{
+		diceT.position_.z+= move;
+	}
+	if (Input::IsKey(DIK_J))
+	{
+		diceT.position_.z -= move;
+	}
 
 	PassDatatoStageCB();
 }
@@ -109,8 +124,7 @@ void ShaderScene::Draw()
 	Transform lightT;
 	lightT.position_ = lightpos_;
 	Model::SetTransform(hModel_.at(0), lightT);
-	Transform diceT;
-	diceT.position_ = { 3,5,-2 };
+	
 	Model::SetTransform(hModel_.at(2), diceT);
 	for (auto i : hModel_)
 	{
