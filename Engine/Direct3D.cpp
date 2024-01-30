@@ -130,10 +130,10 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
 		ZeroMemory(&BlendDesc, sizeof(BlendDesc));
 		BlendDesc.AlphaToCoverageEnable = FALSE;
 		BlendDesc.IndependentBlendEnable = FALSE;
-		BlendDesc.RenderTarget[0].BlendEnable = TRUE;
-		BlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-		BlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-		BlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		BlendDesc.RenderTarget[0].BlendEnable = TRUE;//Ÿˆ‚©‚ç‰º3s‚Ü‚Å•Ï‚¦‚é‚ÆŒ‹\•Ï‚í‚éI@”¼“§–¾Žg‚¤‚©‚Ç‚¤‚©
+		BlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;		//Œ»Ý•`‰æ‚µ‚æ‚¤‚Æ‚·‚é‚à‚Ì
+		BlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;//‚·‚Å‚É•`‰æ‚³‚ê‚Ä‚éƒ‚ƒm
+		BlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;			//¬F‚Ì•û–@
 		BlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
 		BlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 		BlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
@@ -558,7 +558,7 @@ void Direct3D::SetShader(SHADER_TYPE type)
 void Direct3D::BeginDraw()
 {
 			//”wŒi‚ÌF
-	float clearColor[4] = { 0.0f, 0.5f, 0.5f, 1.0f };//R,G,B,A
+	float clearColor[4] = { 0.3f, 0.5f, 0.5f, 1.0f };//R,G,B,A
 
 	//‰æ–Ê‚ðƒNƒŠƒA
 	pContext_->ClearRenderTargetView(pRenderTargetView_, clearColor);
