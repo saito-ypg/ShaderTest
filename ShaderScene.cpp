@@ -38,6 +38,7 @@ void ShaderScene::Initialize()
 	hModel_.push_back(Model::Load("Assets\\lightSphere.fbx"));
 	hModel_.push_back(Model::Load("Assets\\torus.fbx"));
 	hModel_.push_back(Model::Load("Assets\\TransparentDice.fbx"));
+	hModel_.push_back(Model::Load("Assets\\WaterSurface.fbx"));
 	for (auto i : hModel_)
 	{
 		assert(i >= 0);

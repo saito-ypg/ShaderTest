@@ -71,10 +71,11 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL, f
     binormal = normalize(binormal);
     
     float4 posw = mul(pos, matW); //éãê¸ÉxÉNÉgÉã
-    outData.campos = normalize(Cam - posw);
-    outData.Neyev.x = dot(outData.campos, tangent);
-    outData.Neyev.y = dot(outData.campos, binormal);
-    outData.Neyev.z = dot(outData.campos, normal);
+    float4 eye = normalize(Cam - posw);
+    outData.campos = Cam;
+    outData.Neyev.x = dot(eye, tangent);
+    outData.Neyev.y = dot(eye, binormal);
+    outData.Neyev.z = dot(eye, normal);
     outData.Neyev.w = 0;
     
     float4 light_ = normalize(light);

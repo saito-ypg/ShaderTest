@@ -102,6 +102,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Assets\TransparentDice.fbx">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="Assets\torus.fbx">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="Assets\WaterSurface.fbx">
+      <Filter>assets</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Sprite.cpp">

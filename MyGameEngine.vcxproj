@@ -115,6 +115,9 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\torus.fbx" />
+    <None Include="Assets\TransparentDice.fbx" />
+    <None Include="Assets\WaterSurface.fbx" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
