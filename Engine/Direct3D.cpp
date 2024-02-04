@@ -123,7 +123,7 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
 		descDepth.CPUAccessFlags = 0;
 		descDepth.MiscFlags = 0;
 		pDevice_->CreateTexture2D(&descDepth, NULL, &pDepthStencil_);
-		pDevice_->CreateDepthStencilView(pDepthStencil_, NULL, &pDepthStencilView_);
+		pDevice_->CreateDepthStencilView(pDepthStencil_, NULL,&pDepthStencilView_);
 
 		//ブレンドステート
 		D3D11_BLEND_DESC BlendDesc;
@@ -147,7 +147,7 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
 		pContext_->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);  // データの入力種類を指定
 		pContext_->OMSetRenderTargets(1, &pRenderTargetView_, pDepthStencilView_);            // 描画先を設定
 		pContext_->RSSetViewports(1, &vp);
-
+		
 		//シェーダー準備
 		hr=InitShader();
 		if (FAILED(hr))
@@ -553,6 +553,14 @@ void Direct3D::SetShader(SHADER_TYPE type)
 	pContext_->PSSetShader(shaderBundle[type].pPixelShader_, NULL, 0);	//ピクセルシェーダー
 	pContext_->IASetInputLayout(shaderBundle[type].pVertexLayout_);	//頂点インプットレイアウト
 	pContext_->RSSetState(shaderBundle[type].pRasterizerState_);		//ラスタライザー
+}
+
+void Direct3D::SetUseZBuffer(bool shouldUse)
+{
+	if (shouldUse)
+		pContext_->OMSetRenderTargets(1, &pRenderTargetView_, pDepthStencilView_);
+	else
+		pContext_->OMSetRenderTargets(1, &pRenderTargetView_, nullptr);
 }
 
 void Direct3D::BeginDraw()

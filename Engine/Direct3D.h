@@ -36,6 +36,9 @@ namespace Direct3D
 	HRESULT InitShaderNormalMap();
 
 	void SetShader(SHADER_TYPE type);
+	
+	void SetUseZBuffer(bool shouldUse);
+	
 	//•`‰æŠJŽn
 	void BeginDraw();
 

@@ -17,9 +17,18 @@ HRESULT Fbx::Load(std::string fileName)
 {
 	//マネージャを生成
 	FbxManager* pFbxManager = FbxManager::Create();
-
+	if (!pFbxManager)
+	{
+		MessageBox(nullptr, "FBXマネージャ作製に失敗しました", "FBXエラー", MB_OK);
+		return E_FAIL;
+	}
 	//インポーターを生成
 	FbxImporter* fbxImporter = FbxImporter::Create(pFbxManager, "imp");
+	if (!fbxImporter)
+	{
+		MessageBox(nullptr, "FBXインポータ作製に失敗しました", "FBXエラー", MB_OK);
+		return E_FAIL;
+	}
 	fbxImporter->Initialize(fileName.c_str(), -1, pFbxManager->GetIOSettings());
 
 	//シーンオブジェクトにFBXファイルの情報を流し込む
@@ -347,7 +356,8 @@ HRESULT Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 		//色情報格納
 		FbxDouble3  diffuse = pPhong->Diffuse;
 		FbxDouble3  ambient = pPhong->Ambient;
-		pMaterialList_[i].diffuse = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f);
+		
+		pMaterialList_[i].diffuse = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2],1.0f);
 		pMaterialList_[i].ambient = XMFLOAT4((float)ambient[0], (float)ambient[1], (float)ambient[2], 1.0f);
 		pMaterialList_[i].specular = XMFLOAT4{ 0,0,0,0 };
 		pMaterialList_[i].shininess = 1.0f;
@@ -357,7 +367,6 @@ HRESULT Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 			pMaterialList_[i].specular = XMFLOAT4((float)specular[0], (float)specular[1], (float)specular[2], 1.0f);
 			pMaterialList_[i].shininess = (float)pPhong->Shininess;
 		}
-
 
 		//テクスチャ情報
 		{
@@ -383,6 +392,7 @@ HRESULT Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 				HRESULT hr = pMaterialList_[i].pTexture->Load(name);
 				if (FAILED(hr))
 				{
+					
 					return hr;
 				}
 
