@@ -145,6 +145,6 @@ float4 PS(VS_OUT inData) : SV_Target
         }
         result = diffuse + ambient + specular;
     }
-   // result.a = alpha;
+
     return result;
 }

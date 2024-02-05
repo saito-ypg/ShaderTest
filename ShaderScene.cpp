@@ -7,7 +7,7 @@
 #include<d3d11.h>
 
 namespace {
-	const XMFLOAT3 DEF_LIGHT_POSITION = { 0,0,-2 };
+	const XMFLOAT3 DEF_LIGHT_POSITION = { 1,3,-2 };
 }
 
 void ShaderScene::InitConstantBuffer()
@@ -33,21 +33,13 @@ ShaderScene::ShaderScene(GameObject* parent):GameObject(parent,"ShaderScene"),li
 
 void ShaderScene::Initialize()
 {
-	//hModel_.push_back(Model::Load("Assets\\ground.fbx"));
-	//hModel_.push_back(Model::Load("Assets\\sphere.fbx"));
 	hModel_.push_back(Model::Load("Assets\\lightSphere.fbx"));
-	hModel_.push_back(Model::Load("Assets\\torus.fbx"));
-	hModel_.push_back(Model::Load("Assets\\TransparentDice.fbx"));
 	hModel_.push_back(Model::Load("Assets\\WaterSurface.fbx"));
 	for (auto i : hModel_)
 	{
 		assert(i >= 0);
 	}
 	Camera::SetPosition(XMFLOAT3(3, 10,-10));
-	Instantiate<AxisArrow>(this);
-	Model::SetLight(lightpos_);
-	diceT.position_ = { 3,5,-2 };
-
 
 	InitConstantBuffer();
 }
@@ -116,23 +108,18 @@ void ShaderScene::Update()
 
 void ShaderScene::Draw()
 {
+	transform_.rotate_.y =0;
 	for (auto i : hModel_)
 	{
 		Model::SetTransform(i, transform_);
 	}
-
-	Model::SetTransform(hModel_.at(1),st_);
-	Transform lightT;
-	lightT.position_ = lightpos_;
-	Model::SetTransform(hModel_.at(0), lightT);
-	
-	Model::SetTransform(hModel_.at(2), diceT);
+	Transform l;
+	l.position_ = lightpos_;
+	Model::SetTransform(hModel_.at(0),l);
 	for (auto i : hModel_)
 	{
 		Model::Draw(i);
 	}
-	//Transform qt = st_;
-	//qt.scale_=Transform::Float3Add(qt.scale_, XMFLOAT3{1.5f,1.5f,1.5f});
 }
 
 void ShaderScene::Release()
@@ -143,10 +130,7 @@ void ShaderScene::PassDatatoStageCB() {
 	cb.lightPosition = GetLightPos();
 	XMStoreFloat4(&cb.Cam, Camera::GetPosition());
 	Direct3D::pContext_->UpdateSubresource(pCBStageScene_, 0, NULL, &cb, 0, 0);
-	//D3D11_MAPPED_SUBRESOURCE pdata;
-	//Direct3D::pContext_->Map(pCBStageScene_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
-	//memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る
-	//Direct3D::pContext_->Unmap(pCBStageScene_, 0);	//再開
+
 	Direct3D::pContext_->VSSetConstantBuffers(1, 1, &pCBStageScene_);
 	Direct3D::pContext_->PSSetConstantBuffers(1, 1, &pCBStageScene_);
 }
