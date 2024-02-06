@@ -31,6 +31,8 @@ namespace Direct3D
 
 	ID3D11Texture2D* pDepthStencil_=nullptr;			//深度ステンシル
 	ID3D11DepthStencilView* pDepthStencilView_=nullptr;		//深度ステンシルビュー
+	ID3D11DepthStencilState* pDepthStencilState_=nullptr;//深度ステンシルステート
+
 }
 HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
 {
@@ -124,6 +126,14 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
 		descDepth.MiscFlags = 0;
 		pDevice_->CreateTexture2D(&descDepth, NULL, &pDepthStencil_);
 		pDevice_->CreateDepthStencilView(pDepthStencil_, NULL,&pDepthStencilView_);
+
+		D3D11_DEPTH_STENCIL_DESC desc = {};
+		desc.DepthEnable = true;
+		desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+		desc.StencilEnable = true;
+		pDevice_->CreateDepthStencilState(&desc, &pDepthStencilState_);
+		pContext_->OMSetDepthStencilState(pDepthStencilState_, 0);
 
 		//ブレンドステート
 		D3D11_BLEND_DESC BlendDesc;
@@ -593,4 +603,6 @@ void  Direct3D::Release()
 	SAFE_RELEASE(pSwapChain_);
 	SAFE_RELEASE(pContext_);
 	SAFE_RELEASE(pDevice_);
+	SAFE_RELEASE(pDepthStencilState_);
+	SAFE_RELEASE(pBlendState);
 }
