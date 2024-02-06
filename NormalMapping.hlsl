@@ -117,8 +117,8 @@ float4 PS(VS_OUT inData) : SV_Target
         specular = pow(saturate(dot(R, inData.Neyev)), shininess) * specularColor;
         if (hasTexture)
         {
-            diffuse = lightsourse * g_texture.Sample(g_sampler, tmpUV) * S;
-            ambient = lightsourse * g_texture.Sample(g_sampler, tmpUV) * ambientColor;
+            diffuse = lightsourse * g_texture.Sample(g_sampler, inData.uv) * S;
+            ambient = lightsourse * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
            // alpha = g_texture.Sample(g_sampler, tmpUV).a;
         }
         else
@@ -135,8 +135,8 @@ float4 PS(VS_OUT inData) : SV_Target
     
         if (hasTexture)
         {
-            diffuse = lightsourse * g_texture.Sample(g_sampler, tmpUV) * inData.color;
-            ambient = lightsourse * g_texture.Sample(g_sampler, tmpUV) * ambientColor;
+            diffuse = lightsourse * g_texture.Sample(g_sampler, inData.uv) * inData.color;
+            ambient = lightsourse * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
             //alpha = g_texture.Sample(g_sampler, tmpUV).a;
         }
         else
