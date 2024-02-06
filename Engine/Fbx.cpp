@@ -4,7 +4,7 @@
 #include"Texture.h"
 
 #define TOON false
-Fbx::Fbx():pVertexBuffer_(nullptr),pIndexBuffer_(nullptr),pConstantBuffer_(nullptr),pMaterialList_(nullptr), vertexCount_(0), polygonCount_(0), materialCount_(0),indexCount_(nullptr)
+Fbx::Fbx() :pVertexBuffer_(nullptr), pIndexBuffer_(nullptr), pConstantBuffer_(nullptr), pMaterialList_(nullptr), vertexCount_(0), polygonCount_(0), materialCount_(0), indexCount_(nullptr), scrollVal(0.0f)
 {
 }
 
@@ -111,6 +111,7 @@ HRESULT Fbx::Load(std::string fileName)
 
 void Fbx::Draw(Transform& transform)
 {
+	scrollVal = scrollVal + 0.001f;//uvスクロールテスト
 #if TOON
 	//Direct3D::SetShader(SHADER_ToonOutline);
 	//transform.Calculation();//トランスフォームを計算
@@ -302,6 +303,7 @@ void Fbx::PassDataToCB(Transform transform,int i)
 	cb.ambientColor = pMaterialList_[i].ambient;
 	cb.specular = pMaterialList_[i].specular;
 	cb.shininess =  pMaterialList_[i].shininess;
+	cb.scroll = scrollVal;
 	cb.hasTexture = pMaterialList_[i].pTexture != nullptr;
 	cb.hasNormalMap = pMaterialList_[i].pNormalMap != nullptr;
 

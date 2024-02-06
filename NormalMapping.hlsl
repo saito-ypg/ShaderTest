@@ -18,6 +18,7 @@ cbuffer global : register(b0)
     float4 ambientColor;
     float4 specularColor;
     float shininess;
+    float scroll;
     bool hasTexture; // テクスチャ貼ってあるかどうか
     bool hasNormalMap; //ノーマルマップあるかどうか
 };
@@ -101,12 +102,13 @@ float4 PS(VS_OUT inData) : SV_Target
     float4 specular = { 0, 0, 0, 1 };
     float alpha=1.0f;
     float4 result;
+    float2 tmpUV = inData.uv + scroll;
     if (hasNormalMap)
     {
         inData.light = normalize(inData.light);
         float4 specular;
 
-        float4 tmpNormal = normalMap.Sample(g_sampler, inData.uv) * 2 - 1; //色からベクトルに
+        float4 tmpNormal = normalMap.Sample(g_sampler, tmpUV) * 2 - 1; //色からベクトルに
         tmpNormal.w = 0;
         tmpNormal = normalize(tmpNormal);
     
@@ -115,9 +117,9 @@ float4 PS(VS_OUT inData) : SV_Target
         specular = pow(saturate(dot(R, inData.Neyev)), shininess) * specularColor;
         if (hasTexture)
         {
-            diffuse = lightsourse * g_texture.Sample(g_sampler, inData.uv) * S;
-            ambient = lightsourse * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
-           // alpha = g_texture.Sample(g_sampler, inData.uv).a;
+            diffuse = lightsourse * g_texture.Sample(g_sampler, tmpUV) * S;
+            ambient = lightsourse * g_texture.Sample(g_sampler, tmpUV) * ambientColor;
+           // alpha = g_texture.Sample(g_sampler, tmpUV).a;
         }
         else
         {
@@ -133,9 +135,9 @@ float4 PS(VS_OUT inData) : SV_Target
     
         if (hasTexture)
         {
-            diffuse = lightsourse * g_texture.Sample(g_sampler, inData.uv) * inData.color;
-            ambient = lightsourse * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
-            //alpha = g_texture.Sample(g_sampler, inData.uv).a;
+            diffuse = lightsourse * g_texture.Sample(g_sampler, tmpUV) * inData.color;
+            ambient = lightsourse * g_texture.Sample(g_sampler, tmpUV) * ambientColor;
+            //alpha = g_texture.Sample(g_sampler, tmpUV).a;
         }
         else
         {
