@@ -33,8 +33,8 @@ private:
 		XMFLOAT4	diffuseColor;	// マテリアルの色(FBXからとってくる）
 		XMFLOAT4	ambientColor;	//環境光
 		XMFLOAT4	specular;		//反射光
+		XMFLOAT2	scroll;
 		float		shininess;//ハイライトの強さ
-		float		scroll;
 		BOOL		hasTexture;		// テクスチャ貼ってあるかどうか
 		BOOL		hasNormalMap;
 	};
@@ -66,7 +66,7 @@ public:
 	void    Release();
 	void SetDiffuse(XMFLOAT4 rgba);
 	void Setlight(XMFLOAT3 lightpos);
-	float scrollVal;
+	XMFLOAT2 scrollVal;
 private:
 	void PassDataToCB(Transform transform,int i);
 	void SetBufferToPipeline(int i);

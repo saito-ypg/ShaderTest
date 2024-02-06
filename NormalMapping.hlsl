@@ -17,8 +17,8 @@ cbuffer global : register(b0)
     float4 diffuseColor; // ディフューズカラー（マテリアルの色）
     float4 ambientColor;
     float4 specularColor;
+    float2 scroll;
     float shininess;
-    float scroll;
     bool hasTexture; // テクスチャ貼ってあるかどうか
     bool hasNormalMap; //ノーマルマップあるかどうか
 };
