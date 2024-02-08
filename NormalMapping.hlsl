@@ -102,24 +102,27 @@ float4 PS(VS_OUT inData) : SV_Target
     float4 specular = { 0, 0, 0, 1 };
     float alpha=1.0f;
     float4 result;
-    float2 tmpUV = inData.uv + scroll;
+    float2 tmpUV = inData.uv;
+    //逆方向のを足して2で割る
     if (hasNormalMap)
     {
         inData.light = normalize(inData.light);
         float4 specular;
 
-        float4 tmpNormal = normalMap.Sample(g_sampler, tmpUV) * 2 - 1; //色からベクトルに
+        float4 tmpNormal = normalMap.Sample(g_sampler, inData.uv+scroll) * 2 - 1; //色からベクトルに
+        float4 tmpN2 = normalMap.Sample(g_sampler, inData.uv.yx-scroll*1.5) * 2 - 1;
         tmpNormal.w = 0;
-        tmpNormal = normalize(tmpNormal);
+        tmpN2.w =0;
+        tmpNormal = normalize((tmpNormal + tmpN2));
     
         float4 S = saturate(dot(tmpNormal, normalize(inData.light)));
         float4 R = reflect(-inData.light, tmpNormal);
-        specular = pow(saturate(dot(R, inData.Neyev)), shininess) * specularColor;
+        specular = pow(saturate(dot(R, inData.Neyev)),1) * specularColor;
         if (hasTexture)
         {
             diffuse = lightsourse * g_texture.Sample(g_sampler, inData.uv) * S;
             ambient = lightsourse * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
-           // alpha = g_texture.Sample(g_sampler, tmpUV).a;
+            alpha = g_texture.Sample(g_sampler, tmpUV).a;
         }
         else
         {
@@ -127,6 +130,7 @@ float4 PS(VS_OUT inData) : SV_Target
             ambient = lightsourse * diffuseColor * ambientColor;
         }
         result = diffuse + ambient + specular;
+        result.a = (result.r + result.g + result.b) / 3+0.6;
     }
     else
     {
@@ -137,7 +141,7 @@ float4 PS(VS_OUT inData) : SV_Target
         {
             diffuse = lightsourse * g_texture.Sample(g_sampler, inData.uv) * inData.color;
             ambient = lightsourse * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
-            //alpha = g_texture.Sample(g_sampler, tmpUV).a;
+            alpha = g_texture.Sample(g_sampler, tmpUV).a;
         }
         else
         {
