@@ -48,13 +48,25 @@ void ShaderScene::Update()
 {
 	static float move = 0.05f;
 	constexpr float change = 0.05f;
-	if(Input::IsKeyDown(DIK_LEFT))
+	if(Input::IsKey(DIK_LEFT))
 	{
-		move -= change;
+		XMVECTOR tmp = Camera::GetPosition() + XMVECTOR{-move,0,0,0};
+		Camera::SetPosition(tmp);
 	}
-	if (Input::IsKeyDown(DIK_RIGHT))
+	if (Input::IsKey(DIK_RIGHT))
 	{
-		move += change;
+		XMVECTOR tmp = Camera::GetPosition() + XMVECTOR{ move,0,0,0 };
+		Camera::SetPosition(tmp);
+	}
+	if (Input::IsKey(DIK_UP))
+	{
+		XMVECTOR tmp = Camera::GetPosition() + XMVECTOR{ 0,0,move,0 };
+		Camera::SetPosition(tmp);
+	}
+	if (Input::IsKey(DIK_DOWN))
+	{
+		XMVECTOR tmp = Camera::GetPosition() + XMVECTOR{0,0,-move,0 };
+		Camera::SetPosition(tmp);
 	}
 	if (Input::IsKey(DIK_W))
 	{
