@@ -34,7 +34,7 @@ ShaderScene::ShaderScene(GameObject* parent):GameObject(parent,"ShaderScene"),li
 void ShaderScene::Initialize()
 {
 	hModel_.push_back(Model::Load("Assets\\lightSphere.fbx"));
-	hModel_.push_back(Model::Load("Assets\\WaterSurface.fbx"));
+	hModel_.push_back(Model::Load("Assets\\Wa.fbx"));
 	for (auto i : hModel_)
 	{
 		assert(i >= 0);
