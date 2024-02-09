@@ -99,21 +99,6 @@ void ShaderScene::Update()
 		Model::SetLight(lightpos_);
 	}
 	st_.rotate_.y++;
-	if (Input::IsKey(DIK_K))
-	{
-		diceT.position_.x += move;
-	}if (Input::IsKey(DIK_H))
-	{
-		diceT.position_.x -= move;
-	}
-	if (Input::IsKey(DIK_U))
-	{
-		diceT.position_.z+= move;
-	}
-	if (Input::IsKey(DIK_J))
-	{
-		diceT.position_.z -= move;
-	}
 
 	PassDatatoStageCB();
 }
